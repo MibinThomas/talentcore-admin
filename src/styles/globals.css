@@ -1,0 +1,132 @@
+  @import "tailwindcss";
+
+  body {
+    font-family: "Teachers", sans-serif;
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    font-weight: 200;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    background-color: white;
+    color: black;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus,
+  button:focus {
+    outline: none;
+  }
+
+  button,
+  a {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .container {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .toaster {
+    z-index: 9999 !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #fff;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #4D008C;
+    border-radius: 5px;
+  }
+
+  /* Responsive Widths */
+  @media (min-width: 576px) {
+    .container {
+      max-width: 540px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .container {
+      max-width: 720px;
+    }
+  }
+
+  @media (min-width: 992px) {
+    .container {
+      max-width: 960px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .container {
+      max-width: 1140px;
+    }
+  }
+
+  @media (min-width: 1400px) {
+    .container {
+      max-width: 1320px;
+    }
+  }
+
+  /* Full-Width for Smaller Screens */
+  @media (max-width: 575px) {
+    .container {
+      width: 100%;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
+
+  /* Centering Content */
+  .container-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+  }
+
+  .font-primary {
+    font-family: "Teachers", sans-serif;
+  }
+
+  .text-primary {
+    color: #4D008C;
+  }
+
+  .text-secondary {
+    color: #872CD1;
+  }
+
+  .bg-primary {
+    background-color: #4D008C;
+  }
+
+  .bg-secondary {
+    background-color: #872CD1;
+  }
+
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+
