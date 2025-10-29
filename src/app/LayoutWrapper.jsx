@@ -12,9 +12,11 @@ const teachers = Teachers({
 export default function LayoutWrapper({ children }) {
   return (
     <>
-      <div className="flex w-full min-h-screen">
+      <div className="w-full h-screen overflow-hidden">
         <Sidebar />
-        <main className="p-4 lg:w-[calc(100%-300px)] md:pt-0 pt-18 overflow-y-auto overflow-x-hidden">{children}</main>
+        <main className="h-full p-4 overflow-y-auto overflow-x-hidden lg:ml-80 relative z-0 pt-18 lg:pt-6">
+          {children}
+        </main>
       </div>
       <ToastContainer theme="dark" autoClose={3000} />
     </>
