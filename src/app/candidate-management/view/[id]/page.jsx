@@ -1,10 +1,10 @@
 import CandidateProfileView from '@/src/components/candidate-management/CandidateProfileView'
 import React from 'react'
 
-function page() {
+function Page() {
   return (
     <CandidateProfileView/>
   )
 }
 
-export default page
+export default Page

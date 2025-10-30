@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { LuBanknote, LuClock4, LuMapPin, LuTrash } from "react-icons/lu";
-import { AiOutlineEdit } from "react-icons/ai";
+import EditJobModal from "../modal/EditJobModal";
 function JobCard() {
   const job = {
     title: "Frontend Developer",
@@ -20,9 +20,7 @@ function JobCard() {
               <h4 className="text-white text-[30px] font-[600] leading-[1.1] max-w-[80%]">
                 {job?.title}
               </h4>
-              <button className="text-white">
-                <AiOutlineEdit size={30}/>
-              </button>
+              <EditJobModal />
           </div>
           <div className="card__sub-title flex items-center text-[#EFDAFF]">
             <span className="text-[18px] leading-[1.2]">

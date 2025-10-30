@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import React, { useState } from "react";
 import { FaSlidersH, FaEye } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
@@ -122,9 +123,11 @@ const CandidateManagement = () => {
                   </div>
                 </td>
                 <td className="py-3 px-6 text-center text-[18px] ">
-                  <button className="text-gray-800 hover:text-black">
+                  <Link
+                    href={`/candidate-management/view/${index+1}`}
+                   className="text-gray-800 hover:text-black">
                     <FaEye />
-                  </button>
+                  </Link>
                 </td>
               </tr>
             ))}
