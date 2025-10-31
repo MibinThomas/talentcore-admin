@@ -1,7 +1,7 @@
 // src/components/settings/SubscriptionEmails.jsx
 "use client";
-import { Bell, Mail } from "lucide-react";
 import React, { useState } from "react";
+import { LuBell, LuMail } from "react-icons/lu";
 
 export default function SubscriptionEmails() {
   const [weeklyDigest, setWeeklyDigest] = useState(true);
@@ -27,7 +27,7 @@ export default function SubscriptionEmails() {
             {/* Weekly Digest Emails */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-gray-200 rounded-xl p-4 bg-white">
               <div className="flex items-start sm:items-center gap-3">
-                <Bell className="w-5 h-5 text-gray-600 mt-0.5 shrink-0" />
+                <LuBell className="w-5 h-5 text-gray-600 mt-0.5 shrink-0" />
                 <div>
                   <h3 className="text-[16px] sm:text-[16px] font-medium text-gray-800">
                     Weekly Digest Emails
@@ -56,7 +56,7 @@ export default function SubscriptionEmails() {
             {/* Marketing Emails */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-gray-200 rounded-xl p-4 bg-white">
               <div className="flex items-start sm:items-center gap-3">
-                <Mail className="w-5 h-5 text-gray-600 mt-0.5 shrink-0" />
+                <LuMail className="w-5 h-5 text-gray-600 mt-0.5 shrink-0" />
                 <div>
                   <h3 className="text-[16px] sm:text-[16px] font-medium text-gray-800">
                     Marketing Emails

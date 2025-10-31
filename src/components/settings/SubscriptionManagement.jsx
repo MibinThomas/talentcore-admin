@@ -1,7 +1,8 @@
 //src/components/settings/SubscriptionManagement.jsx
 "use client";
 import React from "react";
-import { Users, CalendarX, TrendingUp, CheckCircle, Edit2 } from "lucide-react";
+import { FaEdit } from "react-icons/fa";
+import { LuCalendarX, LuCircleCheck, LuTrendingUp, LuUsers } from "react-icons/lu";
 
 function SubscriptionManagement() {
   // ===== Summary Cards =====
@@ -9,17 +10,17 @@ function SubscriptionManagement() {
     {
       title: "Active Subscriptions",
       value: "35",
-      icon: <Users className="w-5 h-5 text-green-600" />,
+      icon: <LuUsers className="w-5 h-5 text-green-600" />,
     },
     {
       title: "Expired / Cancelled",
       value: "5",
-      icon: <CalendarX className="w-5 h-5 text-red-500" />,
+      icon: <LuCalendarX className="w-5 h-5 text-red-500" />,
     },
     {
       title: "Monthly Revenue",
       value: "₹35,000",
-      icon: <TrendingUp className="w-5 h-5 text-purple-600" />,
+      icon: <LuTrendingUp className="w-5 h-5 text-purple-600" />,
     },
   ];
 
@@ -117,7 +118,7 @@ function SubscriptionManagement() {
                     </p>
                   </div>
                   <button className="bg-gray-100 p-2 border border-[#9AA0B6] rounded-lg hover:bg-gray-200 transition">
-                    <Edit2 className="w-4 h-4 text-gray-600" />
+                    <FaEdit className="w-4 h-4 text-gray-600" />
                   </button>
                 </div>
 
@@ -137,7 +138,7 @@ function SubscriptionManagement() {
                 <ul className="mt-5 space-y-2 text-sm text-gray-700">
                   {plan.features.map((feature, fIndex) => (
                     <li key={fIndex} className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-purple-600 mr-2" />
+                      <LuCircleCheck className="w-4 h-4 text-purple-600 mr-2" />
                       {feature}
                     </li>
                   ))}

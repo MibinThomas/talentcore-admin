@@ -1,7 +1,7 @@
 //src/
 "use client";
-import { Mail } from "lucide-react";
 import React from "react";
+import { LuMail } from "react-icons/lu";
 
 function PasswordReset() {
   const users = [
@@ -80,7 +80,7 @@ function PasswordReset() {
                     </td>
                     <td className="py-3 px-4">
                       <button className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-1.5 text-gray-700 text-[13px] hover:bg-gray-100 transition-all">
-                        <Mail className="w-4 h-4" />
+                        <LuMail className="w-4 h-4" />
                         Reset Password
                       </button>
                     </td>
@@ -114,7 +114,7 @@ function PasswordReset() {
                   Last Reset: {user.lastReset}
                 </p>
                 <button className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md px-3 py-2 text-gray-700 text-[13px] hover:bg-gray-100 transition-all">
-                  <Mail className="w-4 h-4" />
+                  <LuMail className="w-4 h-4" />
                   Reset Password
                 </button>
               </div>

@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import { CheckCircle, Edit2 } from "lucide-react";
 import { FaPlus } from "react-icons/fa";
 import SubscriptionModal from "./SubscriptionModal";
+import { LuCircleCheck, LuPencil } from "react-icons/lu";
 
 function Subscription() {
   const [plans, setPlans] = useState([
@@ -111,7 +111,7 @@ function Subscription() {
                     onClick={() => handleEditClick(index)}
                     className="bg-gray-100 p-2 border border-[#9AA0B6] rounded-lg hover:bg-gray-200 transition"
                   >
-                    <Edit2 className="w-4 h-4 text-gray-600" />
+                    <LuPencil className="w-4 h-4 text-gray-600" />
                   </button>
                 </div>
 
@@ -129,7 +129,7 @@ function Subscription() {
                 <ul className="mt-5 space-y-2 text-sm text-gray-700">
                   {plan.features.map((feature, fIndex) => (
                     <li key={fIndex} className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-purple-600 mr-2" />
+                      <LuCircleCheck className="w-4 h-4 text-purple-600 mr-2" />
                       {feature}
                     </li>
                   ))}
