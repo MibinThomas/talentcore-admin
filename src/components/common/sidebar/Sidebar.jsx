@@ -31,8 +31,8 @@ function Sidebar() {
     { id: 4, label: "Communication", path: "/communication" },
     {
       id: 5,
-      label: "Reports and Analytics",
-      path: "/reports-and-analytics",
+      label: "Subscription Plan",
+      path: "/subscription-plan",
     },
     {
       id: 6,
