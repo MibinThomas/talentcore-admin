@@ -2,6 +2,7 @@
 import { ToastContainer } from "react-toastify";
 import { Teachers } from "next/font/google";
 import Sidebar from "../components/common/sidebar/Sidebar";
+import { usePathname } from "next/navigation";
 const teachers = Teachers({
   variable: "--font-teachers",
   weight: ["400", "500", "600", "700", "800"],
@@ -10,11 +11,15 @@ const teachers = Teachers({
 });
 
 export default function LayoutWrapper({ children }) {
+  const pathname = usePathname();
+
+  const path = ["/auth"]
+  const hideLayout = path.includes(pathname);
   return (
     <>
       <div className="w-full h-screen overflow-hidden">
-        <Sidebar />
-        <main className="h-full p-4 overflow-y-auto overflow-x-hidden lg:ml-80 relative z-0 pt-18 lg:pt-6">
+        {!hideLayout && <Sidebar />}
+        <main className={`relative h-full overflow-y-auto overflow-x-hidden ${!hideLayout &&  "lg:ml-80  z-0 pt-18 lg:pt-6 p-4 "}`}>
           {children}
         </main>
       </div>
