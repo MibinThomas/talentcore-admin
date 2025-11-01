@@ -1,5 +1,5 @@
 "use client";
-import React, { use } from "react";
+import React from "react";
 import Header from "./Header";
 import StatsOverview from "./StatsOverview";
 import CandidateFlowChart from "./CandidateFlowChart";

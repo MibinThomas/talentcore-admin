@@ -1,5 +1,6 @@
+"use client";
 import React from "react";
-
+import { FaArrowRightLong } from "react-icons/fa6";
 function StatsOverview() {
   const stats = [
     {
@@ -24,14 +25,26 @@ function StatsOverview() {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="md:w-[32%] w-full border border-gray-300 flex items-center justify-center flex-col gap-3 py-4"
+            className="md:w-[32%] w-full flex items-center justify-center flex-col gap-3 py-4"
           >
-            <span className="text-black/50 font-normal text-[22px]">
+            <span className="text-black font-normal text-[22px]">
               {stat?.title}
             </span>
-            <span className={`${stat?.id === 3 ? "text-red-600" : "text-[#00C951] "} text-[36px] font-medium`}>
+            <span
+              className={`${
+                stat?.id === 3 ? "text-red-600" : "text-[#00C951] "
+              } text-[36px] font-medium`}
+            >
               {stat?.count}
             </span>
+            <div className="w-full flex items-center justify-end">
+              <button className="w-max me-6">
+                <FaArrowRightLong
+                  size={20}
+                  className="bg-primary text-white rounded-full pe-1"
+                />
+              </button>
+            </div>
           </div>
         ))}
       </div>
