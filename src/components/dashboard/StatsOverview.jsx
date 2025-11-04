@@ -1,24 +1,60 @@
 "use client";
-import React from "react";
+import { getCandidatesCountAPI } from "@/src/services/allAPI";
+import React, { useEffect, useState } from "react";
 import { FaArrowRightLong } from "react-icons/fa6";
 function StatsOverview() {
+  const [count, setCount] = useState({
+    candidatesCount: 0,
+    applicationsTodayCount: 0,
+    pendingApplicationsCount: 0,
+  });
+
+  const handleFetchCount = async () => {
+    try {
+      const result = await getCandidatesCountAPI();
+      console.log(result);
+      if (result.status === 200) {
+        setCount({
+          candidatesCount: result.data.data.candidatesCount,
+          applicationsTodayCount: result.data.data.applicationsTodayCount,
+          pendingApplicationsCount: result.data.data.pendingApplicationsCount,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: result.response.data.message,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching count:", error);
+    }
+  };
   const stats = [
     {
       id: 1,
       title: "Total Candidates Registered",
-      count: 100,
+      count: count.candidatesCount,
     },
     {
       id: 2,
       title: "Applications Recieved Today",
-      count: 250,
+      count: count.applicationsTodayCount,
     },
     {
       id: 3,
       title: "Pending Reviews",
-      count: 15,
+      count: count.pendingApplicationsCount,
     },
   ];
+
+  useEffect(() => {
+    const fetch = async () => {
+      handleFetchCount();
+    };
+    fetch();
+  }, []);
+
   return (
     <div className="w-full h-auto mt-10">
       <div className="flex md:flex-row flex-col items-center justify-center gap-4">

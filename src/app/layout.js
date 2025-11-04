@@ -1,6 +1,7 @@
 import LayoutWrapper from "./LayoutWrapper";
 import PropTypes from "prop-types";
 import "@/styles/globals.css";
+import ReduxProvider from "../redux/Provider";
 
 export const metadata = {
   title: "Talentcore",
@@ -18,7 +19,11 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body>
-          <LayoutWrapper>{children}</LayoutWrapper>
+          <ReduxProvider>
+            <LayoutWrapper>
+              {children}
+              </LayoutWrapper>
+          </ReduxProvider>
       </body>
     </html>
   );
