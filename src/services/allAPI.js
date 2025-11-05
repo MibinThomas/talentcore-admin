@@ -14,3 +14,15 @@ export const getCandidateGraphAPI = async (type) => {
   return await commonAPI("GET", `${SERVER_URL}/admin/dashboard/candidate-graph?type=${type}`, );
 }
 
+
+// company
+export const addNewComapanyAPI = async (reqBody) => {
+  return await commonAPI("POST", `${SERVER_URL}/admin/company`, reqBody);
+};
+export const getAllCompaniesAPI = async () => {
+  return await commonAPI("GET", `${SERVER_URL}/admin/company`);
+};
+export const updateCompanyDetailsByIdAPI = async (id) => {
+  return await commonAPI("PUT", `${SERVER_URL}/admin/company/${id}`);
+};
+

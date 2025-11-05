@@ -23,7 +23,7 @@ function Sidebar() {
       label: "Job Application Management",
       // path: "/job-application-management",
       subItems: [
-        { label: "Company Section", path: "/job-application-management/companies" },
+        { label: "Company Section", path: "/companies" },
         { label: "Job Management", path: "/jobs/jobs-management" },
         { label: "Interview Scheduling", path: "/job-application-management/interviews" },
       ],

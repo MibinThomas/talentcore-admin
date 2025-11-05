@@ -17,7 +17,7 @@ function CandidateFlowChart() {
   const [view, setView] = useState("monthly");
   const [data, setData] = useState([]);
 
-  // ✅ Fetch candidate flow data
+  // Fetch candidate flow data
   const handleFetchCandidatesGraph = async (type) => {
     try {
       const result = await getCandidateGraphAPI(type);
@@ -81,7 +81,7 @@ function CandidateFlowChart() {
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#00000030" />
 
-            {/* 🧭 Adaptive X-Axis for months/quarters/years */}
+            {/*  Adaptive X-Axis for months/quarters/years */}
             <XAxis
               dataKey="name"
               tick={{ fill: "#666", fontSize: 11 }}
