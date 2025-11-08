@@ -1,9 +1,13 @@
 import CandidateProfileView from '@/src/components/candidate-management/CandidateProfileView'
 import React from 'react'
 
-function Page() {
+async function Page({params}) {
+  const {id}=await params
+  console.log(id);
+  
+
   return (
-    <CandidateProfileView/>
+    <CandidateProfileView candidateId={id}/>
   )
 }
 
