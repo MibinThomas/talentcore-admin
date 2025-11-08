@@ -5,7 +5,7 @@ import { FaPlus } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import Swal from "sweetalert2";
 
-function AddCompanyModal() {
+function AddCompanyModal({ onAdded }) {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -69,6 +69,8 @@ function AddCompanyModal() {
               place: "",
             });
           });
+          // Trigger refresh in parent
+          if (onAdded) onAdded();
         } else {
           Swal.fire({
             icon: "error",
