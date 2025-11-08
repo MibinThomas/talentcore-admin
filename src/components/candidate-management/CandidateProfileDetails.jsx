@@ -8,16 +8,8 @@ import {
   LuGraduationCap,
 } from "react-icons/lu";
 
-function CandidateProfileDetails() {
-  const skills = [
-    "React",
-    "TypeScript",
-    "Next.js",
-    "Node.js",
-    "Tailwind CSS",
-    "Jest",
-    "GraphQL",
-  ];
+function CandidateProfileDetails({ data }) {
+  const skillsList = data?.profile?.skills || [];
   return (
     <div className="w-full">
       <div className="container flex flex-col gap-6">
@@ -32,8 +24,20 @@ function CandidateProfileDetails() {
                 <div>
                   <span className="text-[#717171]">Education</span>
                   <ul className="list-disc list-primary ms-4">
-                    <li>Bcom - Bachelor of Commerce</li>
-                    <li>Mcom - Master of Commerce</li>
+                    {data?.profile?.education?.length > 0 ? (
+                      data.profile.education.map((edu, index) => (
+                        <li key={index}>
+                          {edu.title} - {edu.institution} (
+                          {new Date(edu.startYear).getFullYear()}–
+                          {edu.current
+                            ? "Present"
+                            : new Date(edu.endYear).getFullYear()}
+                          )
+                        </li>
+                      ))
+                    ) : (
+                      <li>No education details available</li>
+                    )}
                   </ul>
                 </div>
               </h3>
@@ -49,8 +53,18 @@ function CandidateProfileDetails() {
                 <div>
                   <span className="text-[#717171]">Experience</span>
                   <ul className="list-disc list-primary ms-4">
-                    <li>Company Name - UI/UX Designer - 1yrs</li>
-                    <li>Company Name - Creative Head - 1yrs</li>
+                    {data?.profile?.experiences &&
+                    data.profile.experiences.length > 0 ? (
+                      data.profile.experiences.map((exp, index) => (
+                        <li key={index}>
+                          {exp.company} - {exp.title} (
+                          {new Date(exp.from).getFullYear()} -{" "}
+                          {new Date(exp.to).getFullYear()})
+                        </li>
+                      ))
+                    ) : (
+                      <li>No experience data available</li>
+                    )}
                   </ul>
                 </div>
               </h3>
@@ -61,26 +75,70 @@ function CandidateProfileDetails() {
         <div className="skills__container">
           <h3 className="text-[#717171]">Skills</h3>
           <div className="flex items-center my-5 justify-start md:gap-3 gap-3 flex-wrap">
-            {skills.map((value, index) => (
-              <span
-                key={index}
-                className="content text-white font-medium md:text-[16px] text-[14px] bg-primary px-6 py-1 rounded-[5px]"
-              >
-                {value}
-              </span>
-            ))}
+            {skillsList.length > 0 ? (
+              skillsList.map((skill, index) => (
+                <span
+                  key={index}
+                  className="content text-white font-medium md:text-[16px] text-[14px] bg-primary px-6 py-1 rounded-[5px]"
+                >
+                  {skill.name}
+                </span>
+              ))
+            ) : (
+              <p className="text-gray-500">No skills listed</p>
+            )}
           </div>
         </div>
         {/* Portfolio */}
         <div className="skills__container">
-          <h3 className="text-[#717171]">Portflio</h3>
-          <div className="flex items-center my-5 justify-start md:gap-3 gap-3 flex-wrap">
-            <div className="flex flex-col">
-              <label className="text-black font-medium md:text-[16px] text-[14px] mb-1">Github</label>
-              <Link href="/portfolio" className="text-black text-[18px] border border-gray-300 rounded-[5px] px-6 py-1">
-                github@sanjayps.git
-              </Link>
-            </div>
+          <h3 className="text-[#717171]">Profile</h3>
+
+          <div className="flex flex-col md:flex-row my-5 justify-start md:gap-10 gap-6 flex-wrap">
+            {/* 🔹 Portfolio Links */}
+            {data?.profile?.quickLinks && data.profile.quickLinks.length > 0 ? (
+              data.profile.quickLinks.map((item, index) => (
+                <div key={index} className="flex flex-col">
+                  <label className="text-black font-medium md:text-[16px] text-[14px] mb-1">
+                    {item.title}
+                  </label>
+                  <Link
+                    href={item.link}
+                    target="_blank"
+                    className="text-primary underline text-[18px] border border-gray-300 rounded-[5px] px-6 py-1"
+                  >
+                    {item.link}
+                  </Link>
+                  {item.description && (
+                    <p className="text-gray-600 text-sm mt-1">
+                      {item.description}
+                    </p>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No portfolio links available</p>
+            )}
+
+            {/* 🔹 Profile Links (e.g. GitHub) */}
+            {data?.profile?.profileLinks &&
+            data.profile.profileLinks.length > 0 ? (
+              data.profile.profileLinks.map((item, index) => (
+                <div key={index} className="flex flex-col">
+                  <label className="text-black font-medium md:text-[16px] text-[14px] mb-1">
+                    {item.title}
+                  </label>
+                  <Link
+                    href={item.link}
+                    target="_blank"
+                    className="text-primary underline text-[18px] border border-gray-300 rounded-[5px] px-6 py-1"
+                  >
+                    {item.link}
+                  </Link>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No GitHub links available</p>
+            )}
           </div>
         </div>
 
@@ -89,36 +147,62 @@ function CandidateProfileDetails() {
           <h3 className="flex items-center justify-start gap-2 mb-3">
             <span className="rounded-[10px] p-2 bg-primary text-white">
               <IoDocumentTextOutline size={24} />
-            </span>{" "}
-            <span className="text-[#717171]"> Documents</span>
+            </span>
+            <span className="text-[#717171]">Documents</span>
           </h3>
-          <div className="border rounded-lg border-[#C3C3C3]">
-            <div className="flex flex-col sm:flex-row justify-between items-start p-2 lg:p-5">
-              <div className="gap-5 flex items-center mb-3 sm:mb-0">
-                <LuBookOpenText className="w-[34px] h-[34px] lg:w-[44px] lg:h-[44px] text-[#4D008C]" />
-                <div className="flex flex-col">
-                  <p className="text-lg lg:text-2xl font-[450] text-[#4D008C]">
-                    reasume.pdf
-                  </p>
-                  <p className="text-sm lg:text-[17px]">
-                    Uploaded 2 days ago - 245kb
-                  </p>
+
+          {/* Check if resumes exist */}
+          {data?.profile?.resumes && data.profile.resumes.length > 0 ? (
+            data.profile.resumes.map((resume, index) => (
+              <div
+                key={resume._id || index}
+                className="border rounded-lg border-[#C3C3C3] mb-4"
+              >
+                <div className="flex flex-col sm:flex-row justify-between items-start p-2 lg:p-5">
+                  {/* Left Side */}
+                  <div className="gap-5 flex items-center mb-3 sm:mb-0">
+                    <LuBookOpenText className="w-[34px] h-[34px] lg:w-[44px] lg:h-[44px] text-[#4D008C]" />
+                    <div className="flex flex-col">
+                      <p className="text-lg lg:text-2xl font-[450] text-[#4D008C]">
+                        resume_{index + 1}.pdf
+                      </p>
+                      <p className="text-sm lg:text-[17px] text-gray-600">
+                        Uploaded{" "}
+                        {new Date(resume.createdAt).toLocaleDateString(
+                          "en-IN",
+                          {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          }
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right Side Buttons */}
+                  <div className="flex gap-3 self-end sm:self-center">
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadResume(resume._id)}
+                      title="Download"
+                    >
+                      <LuDownload className="w-[20px] h-[20px] cursor-pointer text-[#4D008C]" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleViewResume(resume._id)}
+                      title="View"
+                    >
+                      <LuEye className="w-[20px] h-[20px] cursor-pointer text-[#4D008C]" />
+                    </button>
+                  </div>
                 </div>
               </div>
-
-              <div className="flex gap-3 self-end sm:self-center">
-                <button type="button">
-                  <LuDownload className="w-[20px] h-[20px] cursor-pointer" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleViewResume(resume?._id)}
-                >
-                  <LuEye className="w-[20px] h-[20px] cursor-pointer" />
-                </button>
-              </div>
-            </div>
-          </div>
+            ))
+          ) : (
+            <p className="text-gray-500">No resumes available</p>
+          )}
         </div>
       </div>
     </div>

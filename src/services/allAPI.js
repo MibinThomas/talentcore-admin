@@ -26,3 +26,14 @@ export const updateCompanyDetailsByIdAPI = async (id) => {
   return await commonAPI("PUT", `${SERVER_URL}/admin/company/${id}`);
 };
 
+//candidate management
+export const getAllCandidatesAPI=async()=>{
+  return await commonAPI("GET",`${SERVER_URL}/admin/candidates`)
+}
+export const getCandidatesDetailsByIdAPI=async(id)=>{
+  return await commonAPI("GET",`${SERVER_URL}/admin/candidates/${id}`);
+}
+
+export const getToggleCandidateStatusAPI=async(id)=>{
+  return await commonAPI("PATCH",`${SERVER_URL}/admin/candidates/${id}/toggle-status`);
+}
