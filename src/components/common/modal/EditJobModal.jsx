@@ -1,19 +1,23 @@
 "use client";
-import React, { useState } from "react";
+import { updateJobDetailsByIdAPI, getAllCompaniesAPI } from "@/src/services/allAPI";
+import React, { useEffect, useState } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
-import { FaPlus } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
+import Swal from "sweetalert2";
 
-function EditJobModal() {
+function EditJobModal({ job, onUpdate }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [companies, setCompanies] = useState([]);
+
   const [formData, setFormData] = useState({
     companyId: "",
     title: "",
     description: "",
-    responsibilities: "",
-    requirements: "",
-    skills: "",
-    benefits: "",
+    responsibilities: [""],
+    requirements: [""],
+    skills: [""],
+    benefits: [""],
     jobType: "",
     experienceLevel: "",
     salaryMin: "",
@@ -24,44 +28,87 @@ function EditJobModal() {
     isUrgent: false,
     applicationDeadline: "",
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    if (type === "checkbox") {
-      setFormData({ ...formData, [name]: checked });
-    } else {
-      setFormData({ ...formData, [name]: value });
+  // ✅ Fetch all companies for dropdown
+  const fetchCompanies = async () => {
+    try {
+      const result = await getAllCompaniesAPI();
+      if (result.status === 200) {
+        setCompanies(result.data?.companies || result.data || []);
+      }
+    } catch (err) {
+      console.error("Error fetching companies:", err);
     }
   };
 
-  const handleSubmit = async (e) => {
+  // ✅ Prefill form when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchCompanies();
+      if (job) {
+        setFormData({
+          companyId: job?.companyId?._id || job?.companyId || "",
+          title: job?.title || "",
+          description: job?.description || "",
+          responsibilities: job?.responsibilities?.length
+            ? job.responsibilities
+            : [""],
+          requirements: job?.requirements?.length ? job.requirements : [""],
+          skills: job?.skills?.length ? job.skills : [""],
+          benefits: job?.benefits?.length ? job.benefits : [""],
+          jobType: job?.jobType || "",
+          experienceLevel: job?.experienceLevel || "",
+          salaryMin: job?.salary?.min || "",
+          salaryMax: job?.salary?.max || "",
+          salaryCurrency: job?.salary?.currency || "INR",
+          locationType: job?.location?.type || "",
+          locationPlace: job?.location?.place || "",
+          isUrgent: job?.isUrgent || false,
+          applicationDeadline: job?.applicationDeadline
+            ? job.applicationDeadline.split("T")[0]
+            : "",
+        });
+      }
+    }
+  }, [isOpen, job]);
+
+  // --- Handlers ---
+  const handleArrayChange = (field, index, value) => {
+    const updated = [...formData[field]];
+    updated[index] = value;
+    setFormData({ ...formData, [field]: updated });
+  };
+
+  const handleAddField = (field) => {
+    setFormData({ ...formData, [field]: [...formData[field], ""] });
+  };
+
+  const handleRemoveField = (field, index) => {
+    const updated = formData[field].filter((_, i) => i !== index);
+    setFormData({ ...formData, [field]: updated });
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+  const handleUpdateJob = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
     try {
-      const processedData = {
+      const reqBody = {
         companyId: formData.companyId,
         title: formData.title,
         description: formData.description,
-        responsibilities: formData.responsibilities
-          .split(",")
-          .map((item) => item.trim())
-          .filter(Boolean),
-        requirements: formData.requirements
-          .split(",")
-          .map((item) => item.trim())
-          .filter(Boolean),
-        skills: formData.skills
-          .split(",")
-          .map((item) => item.trim())
-          .filter(Boolean),
-        benefits: formData.benefits
-          .split(",")
-          .map((item) => item.trim())
-          .filter(Boolean),
+        responsibilities: formData.responsibilities.filter((r) => r.trim() !== ""),
+        requirements: formData.requirements.filter((r) => r.trim() !== ""),
+        skills: formData.skills.filter((r) => r.trim() !== ""),
+        benefits: formData.benefits.filter((r) => r.trim() !== ""),
         jobType: formData.jobType,
         experienceLevel: formData.experienceLevel,
         salary: {
@@ -77,64 +124,98 @@ function EditJobModal() {
         applicationDeadline: formData.applicationDeadline,
       };
 
-      // Remove undefined salary fields if not provided
-      if (!processedData.salary.min) delete processedData.salary.min;
-      if (!processedData.salary.max) delete processedData.salary.max;
+      const result = await updateJobDetailsByIdAPI(job._id, reqBody);
 
-      const response = await fetch("/api/jobs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(processedData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create job");
+      if (result?.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Job Updated",
+          text: result?.data?.message || "Job updated successfully.",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        if (onUpdate) onUpdate();
+        setIsOpen(false);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text:
+            result?.response?.data?.message ||
+            result?.data?.message ||
+            "Failed to update job.",
+        });
       }
-
-      const result = await response.json();
-      console.log("New Job Data:", result);
-      setIsOpen(false);
-      // Optionally reset form or show success message
     } catch (err) {
-      setError(err.message);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text:
+          err?.response?.data?.message ||
+          err?.message ||
+          "Something went wrong while updating the job.",
+      });
+      console.error("Update error:", err);
     } finally {
       setIsLoading(false);
     }
   };
 
   const inputClass =
-    "text-[18px] text-black border border-t-0 border-gray-200 rounded-[10px] px-3 py-2 w-full focus:outline-none placeholder:text-[#B1B1B1] shadow-[0px_3px_4.3px_-1px_#00000036]";
-  const selectClass = (value) =>
-    `text-[18px] border border-t-0 border-gray-200 rounded-[10px] px-3 py-2 w-full focus:outline-none shadow-[0px_3px_4.3px_-1px_#00000036] ${
-      value ? "text-black" : "text-[#B1B1B1]"
-    }`;
-  const textareaClass = (value) =>
-    `text-[18px] ${
-      value ? "text-black" : "text-[#B1B1B1]"
-    } border border-t-0 border-gray-200 rounded-[10px] px-3 py-2 w-full focus:outline-none placeholder:text-[#B1B1B1] shadow-[0px_3px_4.3px_-1px_#00000036] resize-none`;
+    "text-[16px] border border-gray-200 rounded-[10px] px-3 py-2 w-full focus:outline-none placeholder:text-[#B1B1B1] shadow-sm";
+
+  const renderDynamicField = (label, field) => (
+    <div className="col-span-1 sm:col-span-2">
+      <label className="block text-gray-700 text-[15px] mb-2">{label}</label>
+      <div className="space-y-2">
+        {formData[field].map((item, index) => (
+          <div key={index} className="flex gap-2 items-center">
+            <input
+              type="text"
+              placeholder={`${label} ${index + 1}`}
+              value={item}
+              onChange={(e) => handleArrayChange(field, index, e.target.value)}
+              className={`${inputClass} flex-1`}
+            />
+            {formData[field].length > 1 && (
+              <button
+                type="button"
+                onClick={() => handleRemoveField(field, index)}
+                className="text-red-500 hover:text-red-600 text-sm font-medium"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => handleAddField(field)}
+        className="flex items-center gap-2 text-primary text-[15px] mt-2 hover:text-primary/80"
+      >
+        + Add {label}
+      </button>
+    </div>
+  );
 
   return (
     <>
-      {/* Trigger Button */}
+      {/* Trigger */}
       <button onClick={() => setIsOpen(true)} className="text-white">
-        <AiOutlineEdit size={30} />
+        <AiOutlineEdit size={22} />
       </button>
 
-      {/* Modal Overlay */}
+      {/* Modal */}
       {isOpen && (
         <div
           className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4"
           onClick={() => setIsOpen(false)}
         >
-          {/* Modal Box */}
           <div
             onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-2xl shadow-lg w-full max-w-[650px] p-6 md:p-8 relative max-h-[90vh] overflow-y-auto"
           >
-            {/* Close Button */}
             <button
               onClick={() => setIsOpen(false)}
               className="absolute top-4 right-4 text-gray-500 hover:text-black"
@@ -142,135 +223,83 @@ function EditJobModal() {
               <IoClose size={24} />
             </button>
 
-            {/* Title */}
-            <h2 className="text-xl font-semibold text-gray-900">Edit Job Details</h2>
-            <p className="text-gray-500 text-sm mb-6">
-              Please fill in the details to edit the job.
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Edit Job Details
+            </h2>
+            <p className="text-gray-500 text-sm mb-4">
+              Update the job information below.
             </p>
 
-            {/* Error Message */}
-            {error && (
-              <div className="col-span-1 sm:col-span-2 mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-                {error}
+            <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Company Dropdown */}
+              <div className="col-span-1 sm:col-span-2">
+                <label className="block text-gray-700 text-[15px] mb-2">
+                  Select Company
+                </label>
+                <select
+                  name="companyId"
+                  value={formData.companyId}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  <option value="">Select Company</option>
+                  {companies.map((c) => (
+                    <option key={c._id} value={c._id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
               </div>
-            )}
 
-            {/* Form */}
-            <form
-              onSubmit={handleSubmit}
-              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-            >
-              <input
-                type="text"
-                name="companyId"
-                placeholder="Company ID"
-                value={formData.companyId}
-                onChange={handleChange}
-                className={inputClass}
-              />
               <input
                 type="text"
                 name="title"
                 placeholder="Job Title"
                 value={formData.title}
                 onChange={handleChange}
-                required
                 className={inputClass}
               />
+
               <textarea
                 name="description"
                 placeholder="Job Description"
                 value={formData.description}
                 onChange={handleChange}
                 rows={3}
-                className={`${textareaClass(
-                  formData.description
-                )} col-span-1 sm:col-span-2`}
+                className={`${inputClass} col-span-1 sm:col-span-2`}
               />
-              <textarea
-                name="responsibilities"
-                placeholder="Responsibilities (comma-separated)"
-                value={formData.responsibilities}
-                onChange={handleChange}
-                rows={3}
-                className={`${textareaClass(
-                  formData.responsibilities
-                )} col-span-1 sm:col-span-2`}
-              />
-              <textarea
-                name="requirements"
-                placeholder="Requirements (comma-separated)"
-                value={formData.requirements}
-                onChange={handleChange}
-                rows={3}
-                className={`${textareaClass(
-                  formData.requirements
-                )} col-span-1 sm:col-span-2`}
-              />
-              <textarea
-                name="skills"
-                placeholder="Skills (comma-separated)"
-                value={formData.skills}
-                onChange={handleChange}
-                rows={3}
-                className={`${textareaClass(
-                  formData.skills
-                )} col-span-1 sm:col-span-2`}
-              />
-              <textarea
-                name="benefits"
-                placeholder="Benefits (comma-separated)"
-                value={formData.benefits}
-                onChange={handleChange}
-                rows={3}
-                className={`${textareaClass(
-                  formData.benefits
-                )} col-span-1 sm:col-span-2`}
-              />
+
+              {renderDynamicField("Responsibilities", "responsibilities")}
+              {renderDynamicField("Requirements", "requirements")}
+              {renderDynamicField("Skills", "skills")}
+              {renderDynamicField("Benefits", "benefits")}
+
               <select
                 name="jobType"
                 value={formData.jobType}
                 onChange={handleChange}
-                className={selectClass(formData.jobType)}
+                className={inputClass}
               >
-                <option value="" className="text-[#B1B1B1]">
-                  Job Type
-                </option>
-                <option value="Full-Time" className="text-black">
-                  Full-Time
-                </option>
-                <option value="Part-Time" className="text-black">
-                  Part-Time
-                </option>
-                <option value="Contract" className="text-black">
-                  Contract
-                </option>
-                <option value="Internship" className="text-black">
-                  Internship
-                </option>
+                <option value="">Job Type</option>
+                <option value="Full-Time">Full-Time</option>
+                <option value="Part-Time">Part-Time</option>
+                <option value="Contract">Contract</option>
+                <option value="Internship">Internship</option>
               </select>
+
               <select
                 name="experienceLevel"
                 value={formData.experienceLevel}
                 onChange={handleChange}
-                className={selectClass(formData.experienceLevel)}
+                className={inputClass}
               >
-                <option value="" className="text-[#B1B1B1]">
-                  Experience Level
-                </option>
-                <option value="0-1" className="text-black">
-                  0-1 year
-                </option>
-                <option value="1-2" className="text-black">
-                  1-2 years
-                </option>
-                <option value="3-5" className="text-black">
-                  3-5 years
-                </option>
-                <option value="5+" className="text-black">
-                  5+ years
-                </option>
+                <option value="">Experience Level</option>
+                <option value="0-1">0-1 year</option>
+                <option value="1-2">1-2 years</option>
+                <option value="3-5">3-5 years</option>
+                <option value="5+">5+ years</option>
               </select>
+
               <input
                 type="number"
                 name="salaryMin"
@@ -279,6 +308,7 @@ function EditJobModal() {
                 onChange={handleChange}
                 className={inputClass}
               />
+
               <input
                 type="number"
                 name="salaryMax"
@@ -287,41 +317,30 @@ function EditJobModal() {
                 onChange={handleChange}
                 className={inputClass}
               />
+
               <select
                 name="salaryCurrency"
                 value={formData.salaryCurrency}
                 onChange={handleChange}
-                className={selectClass(formData.salaryCurrency)}
+                className={inputClass}
               >
-                <option value="INR" className="text-black">
-                  INR
-                </option>
-                <option value="USD" className="text-black">
-                  USD
-                </option>
-                <option value="EUR" className="text-black">
-                  EUR
-                </option>
+                <option value="INR">INR</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
               </select>
+
               <select
                 name="locationType"
                 value={formData.locationType}
                 onChange={handleChange}
-                className={selectClass(formData.locationType)}
+                className={inputClass}
               >
-                <option value="" className="text-[#B1B1B1]">
-                  Location Type
-                </option>
-                <option value="onsite" className="text-black">
-                  Onsite
-                </option>
-                <option value="remote" className="text-black">
-                  Remote
-                </option>
-                <option value="hybrid" className="text-black">
-                  Hybrid
-                </option>
+                <option value="">Location Type</option>
+                <option value="onsite">Onsite</option>
+                <option value="remote">Remote</option>
+                <option value="hybrid">Hybrid</option>
               </select>
+
               <input
                 type="text"
                 name="locationPlace"
@@ -330,40 +349,43 @@ function EditJobModal() {
                 onChange={handleChange}
                 className={inputClass}
               />
+
               <label className="col-span-1 sm:col-span-2 flex items-center gap-2">
                 <input
                   type="checkbox"
                   name="isUrgent"
                   checked={formData.isUrgent}
                   onChange={handleChange}
-                  className="w-4 h-4 text-primary focus:ring-primary"
                 />
-                <span className="text-[18px] text-gray-700">Is Urgent</span>
+                <span className="text-[15px] text-gray-700">Is Urgent</span>
               </label>
-              <input
-                type="date"
-                name="applicationDeadline"
-                value={formData.applicationDeadline}
-                onChange={handleChange}
-                className={`${inputClass} col-span-1 sm:col-span-2 ${
-                  formData.applicationDeadline ? "text-black" : "text-[#B1B1B1]"
-                }`}
-              />
 
-              {/* Buttons */}
+              <div className="flex flex-col col-span-1 sm:col-span-2">
+                <label className="text-gray-700 text-[15px] mb-2">
+                  Application Deadline
+                </label>
+                <input
+                  type="date"
+                  name="applicationDeadline"
+                  value={formData.applicationDeadline}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+              </div>
+
               <div className="col-span-1 sm:col-span-2 flex justify-center gap-6 mt-4">
                 <button
-                  type="submit"
+                  onClick={handleUpdateJob}
+                  type="button"
                   disabled={isLoading}
                   className="bg-primary text-white px-8 py-2 rounded-lg hover:bg-primary/90 disabled:opacity-50"
                 >
-                  {isLoading ? "Submitting..." : "Submit"}
+                  {isLoading ? "Updating..." : "Update"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
                   className="text-gray-500 hover:text-primary"
-                  disabled={isLoading}
                 >
                   Cancel
                 </button>

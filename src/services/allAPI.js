@@ -7,12 +7,15 @@ export const loginApi = async (reqBody) => {
 
 // dashboard
 export const getCandidatesCountAPI = async () => {
-    return await commonAPI("GET", `${SERVER_URL}/admin/dashboard/count`);
-} 
+  return await commonAPI("GET", `${SERVER_URL}/admin/dashboard/count`);
+};
 
 export const getCandidateGraphAPI = async (type) => {
-  return await commonAPI("GET", `${SERVER_URL}/admin/dashboard/candidate-graph?type=${type}`, );
-}
+  return await commonAPI(
+    "GET",
+    `${SERVER_URL}/admin/dashboard/candidate-graph?type=${type}`
+  );
+};
 
 // company
 export const addNewComapanyAPI = async (reqBody) => {
@@ -26,13 +29,36 @@ export const updateCompanyDetailsByIdAPI = async (id, reqBody) => {
 };
 
 //candidate management
-export const getAllCandidatesAPI=async()=>{
-  return await commonAPI("GET",`${SERVER_URL}/admin/candidates`)
-}
-export const getCandidatesDetailsByIdAPI=async(id)=>{
-  return await commonAPI("GET",`${SERVER_URL}/admin/candidates/${id}`);
-}
+export const getAllCandidatesAPI = async () => {
+  return await commonAPI("GET", `${SERVER_URL}/admin/candidates`);
+};
+export const getCandidatesDetailsByIdAPI = async (id) => {
+  return await commonAPI("GET", `${SERVER_URL}/admin/candidates/${id}`);
+};
 
-export const getToggleCandidateStatusAPI=async(id)=>{
-  return await commonAPI("PATCH",`${SERVER_URL}/admin/candidates/${id}/toggle-status`);
-}
+export const getToggleCandidateStatusAPI = async (id) => {
+  return await commonAPI(
+    "PATCH",
+    `${SERVER_URL}/admin/candidates/${id}/toggle-status`
+  );
+};
+
+// job management
+export const fetchAllJobsAPI = async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return await commonAPI("GET", `${SERVER_URL}/admin/jobs?${query}`);
+};
+
+export const addNewJobAPI = async (reqBody) => {
+  return await commonAPI("POST", `${SERVER_URL}/admin/jobs`, reqBody);
+};
+
+export const updateJobDetailsByIdAPI = async (id, reqBody) => {
+  return await commonAPI("PUT", `${SERVER_URL}/admin/jobs/${id}`, reqBody);
+};  
+
+
+export const getApplicantsByJobAPI = async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return await commonAPI("GET", `${SERVER_URL}/admin/jobs/applications?${query}`);
+};
