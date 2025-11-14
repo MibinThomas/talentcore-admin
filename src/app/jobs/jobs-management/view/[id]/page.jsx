@@ -1,9 +1,10 @@
 import JobDetailsPage from '@/src/components/jobs-management/JobDetailsPage'
 import React from 'react'
 
-function Page() {
+async function Page({ params }) {
+  const { id } = await params;
   return (
-    <JobDetailsPage/>
+    <JobDetailsPage jobId={id} />
   )
 }
 

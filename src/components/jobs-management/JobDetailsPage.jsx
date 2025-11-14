@@ -5,62 +5,100 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import CompanyOverview from "./CompanyOverview.jsx";
 import { useRouter } from "next/navigation";
-import { LuArrowLeft, LuBookmark, LuCalendar, LuClock, LuMapPin, LuShare2, LuUsersRound, LuWallet } from "react-icons/lu";
+import {
+  LuArrowLeft,
+  LuBookmark,
+  LuCalendar,
+  LuClock,
+  LuMapPin,
+  LuShare2,
+  LuUsersRound,
+  LuWallet,
+} from "react-icons/lu";
+import { getJobDetailsByIdAPI } from "@/src/services/allAPI.js";
+import Swal from "sweetalert2";
 
-function JobDetailsPage() {
-  const [similarJobs, setSimilarJobs] = useState([]);
+function JobDetailsPage({ jobId }) {
+  const [job, setJob] = useState({});
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-    // Dummy data for job details
-    const jobDetails = {
-      title: "Senior Frontend Developer",
-      company: "TechCorp Innovations",
-      location: "New York, NY, USA",
-      salary: "$120,000 - $150,000 annually",
-      postedTime: "Posted 2 days ago",
-      totalApplicants: 25,
-      description: "We are seeking a talented Senior Frontend Developer to join our dynamic team at TechCorp Innovations. In this role, you will be responsible for building responsive and engaging user interfaces using modern web technologies. You will collaborate closely with UX designers, backend developers, and product managers to deliver high-quality features that enhance user experience. If you have a passion for clean code, performance optimization, and innovative design, this is the perfect opportunity for you.",
-      responsibilities: [
-        "Develop and maintain user-facing features using React.js and TypeScript",
-        "Collaborate with designers to implement pixel-perfect UI components",
-        "Optimize application performance and ensure cross-browser compatibility",
-        "Integrate APIs and third-party services to enhance functionality",
-        "Conduct code reviews and mentor junior developers on best practices",
-        "Stay updated with the latest frontend trends and tools"
-      ],
-      requirements: [
-        "Bachelor's degree in Computer Science or related field",
-        "5+ years of professional experience in frontend development",
-        "Proficiency in JavaScript, React, and state management libraries (e.g., Redux)",
-        "Strong understanding of HTML5, CSS3, and responsive design principles",
-        "Experience with build tools like Webpack or Vite",
-        "Excellent problem-solving skills and attention to detail",
-        "Ability to work in a fast-paced, agile environment"
-      ],
-      skills: [
-        "React",
-        "TypeScript",
-        "JavaScript (ES6+)",
-        "CSS/SCSS",
-        "Git",
-        "Webpack",
-        "RESTful APIs"
-      ],
-      benefits: [
-        "Competitive salary and performance-based bonuses",
-        "Comprehensive health, dental, and vision insurance",
-        "401(k) retirement plan with company matching",
-        "Unlimited paid time off and flexible working hours",
-        "Professional development budget for courses and conferences",
-        "Remote work options and home office stipend",
-        "Team-building events and wellness programs",
-        "Stock options and employee referral bonuses"
-      ],
-      deadline: "November 15, 2025",
-      companyId: "techcorp-123" // Dummy company ID for CompanyOverview
-    };
+  console.log(jobId);
+  
 
+  // Dummy data for job details
+  const jobDetails = {
+    title: "Senior Frontend Developer",
+    company: "TechCorp Innovations",
+    location: "New York, NY, USA",
+    salary: "$120,000 - $150,000 annually",
+    postedTime: "Posted 2 days ago",
+    totalApplicants: 25,
+    description:
+      "We are seeking a talented Senior Frontend Developer to join our dynamic team at TechCorp Innovations. In this role, you will be responsible for building responsive and engaging user interfaces using modern web technologies. You will collaborate closely with UX designers, backend developers, and product managers to deliver high-quality features that enhance user experience. If you have a passion for clean code, performance optimization, and innovative design, this is the perfect opportunity for you.",
+    responsibilities: [
+      "Develop and maintain user-facing features using React.js and TypeScript",
+      "Collaborate with designers to implement pixel-perfect UI components",
+      "Optimize application performance and ensure cross-browser compatibility",
+      "Integrate APIs and third-party services to enhance functionality",
+      "Conduct code reviews and mentor junior developers on best practices",
+      "Stay updated with the latest frontend trends and tools",
+    ],
+    requirements: [
+      "Bachelor's degree in Computer Science or related field",
+      "5+ years of professional experience in frontend development",
+      "Proficiency in JavaScript, React, and state management libraries (e.g., Redux)",
+      "Strong understanding of HTML5, CSS3, and responsive design principles",
+      "Experience with build tools like Webpack or Vite",
+      "Excellent problem-solving skills and attention to detail",
+      "Ability to work in a fast-paced, agile environment",
+    ],
+    skills: [
+      "React",
+      "TypeScript",
+      "JavaScript (ES6+)",
+      "CSS/SCSS",
+      "Git",
+      "Webpack",
+      "RESTful APIs",
+    ],
+    benefits: [
+      "Competitive salary and performance-based bonuses",
+      "Comprehensive health, dental, and vision insurance",
+      "401(k) retirement plan with company matching",
+      "Unlimited paid time off and flexible working hours",
+      "Professional development budget for courses and conferences",
+      "Remote work options and home office stipend",
+      "Team-building events and wellness programs",
+      "Stock options and employee referral bonuses",
+    ],
+    deadline: "November 15, 2025",
+    companyId: "techcorp-123", // Dummy company ID for CompanyOverview
+  };
+
+  const handleFetchJobDetails = async () => {
+    setLoading(true);
+    try {
+      const result = await getJobDetailsByIdAPI(jobId);
+      console.log("JobDetails",result.data.job);
+      
+      if (result.status === 200) {
+        setLoading(false);
+        setJob(result.data.job);
+      }
+    } catch (error) {
+      const errorMsg =
+        error?.response?.data?.message || "Failed to fetch job details.";
+      Swal.fire("Error", errorMsg, "error");
+      console.error("Error fetching job details:", errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    handleFetchJobDetails();
+  }, [jobId]);
 
   if (loading) {
     return <div>Loading job details...</div>; // Simple loading fallback
@@ -167,46 +205,48 @@ function JobDetailsPage() {
               </div>
 
               {/* Key Responsibilities */}
-              {jobDetails.responsibilities && jobDetails.responsibilities.length > 0 && (
-                <div className="job__description w-full rounded-[13px] border border-[#D9D9D9] md:px-8 md:py-6 p-4">
-                  <h4 className="font-semibold text-black md:text-[30px] text-[24px] mb-4">
-                    Key Responsibilities
-                  </h4>
-                  <div className="md:pl-8 pl-6">
-                    <ol className="list-disc flex flex-col gap-3">
-                      {jobDetails.responsibilities.map((value, index) => (
-                        <li
-                          key={index}
-                          className="content text-[#303030] md:text-[16px] text-[14px]"
-                        >
-                          {value}
-                        </li>
-                      ))}
-                    </ol>
+              {jobDetails.responsibilities &&
+                jobDetails.responsibilities.length > 0 && (
+                  <div className="job__description w-full rounded-[13px] border border-[#D9D9D9] md:px-8 md:py-6 p-4">
+                    <h4 className="font-semibold text-black md:text-[30px] text-[24px] mb-4">
+                      Key Responsibilities
+                    </h4>
+                    <div className="md:pl-8 pl-6">
+                      <ol className="list-disc flex flex-col gap-3">
+                        {jobDetails.responsibilities.map((value, index) => (
+                          <li
+                            key={index}
+                            className="content text-[#303030] md:text-[16px] text-[14px]"
+                          >
+                            {value}
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* Requirements */}
-              {jobDetails.requirements && jobDetails.requirements.length > 0 && (
-                <div className="job__description w-full rounded-[13px] border border-[#D9D9D9] md:px-8 md:py-6 p-4">
-                  <h4 className="font-semibold text-black md:text-[30px] text-[24px] mb-4">
-                    Requirements
-                  </h4>
-                  <div className="md:pl-8 pl-6">
-                    <ol className="list-disc flex flex-col gap-3">
-                      {jobDetails.requirements.map((value, index) => (
-                        <li
-                          key={index}
-                          className="content text-[#303030] md:text-[16px] text-[14px]"
-                        >
-                          {value}
-                        </li>
-                      ))}
-                    </ol>
+              {jobDetails.requirements &&
+                jobDetails.requirements.length > 0 && (
+                  <div className="job__description w-full rounded-[13px] border border-[#D9D9D9] md:px-8 md:py-6 p-4">
+                    <h4 className="font-semibold text-black md:text-[30px] text-[24px] mb-4">
+                      Requirements
+                    </h4>
+                    <div className="md:pl-8 pl-6">
+                      <ol className="list-disc flex flex-col gap-3">
+                        {jobDetails.requirements.map((value, index) => (
+                          <li
+                            key={index}
+                            className="content text-[#303030] md:text-[16px] text-[14px]"
+                          >
+                            {value}
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* Skills */}
               {jobDetails.skills && jobDetails.skills.length > 0 && (
@@ -272,7 +312,7 @@ function JobDetailsPage() {
           <div className="lg:col-span-4 col-span-1">
             <div className="flex flex-col gap-4">
               <div className="flex border border-[#D9D9D9] p-6 rounded-[13px]">
-                <CompanyOverview  /> {/* Pass company data if needed */}
+                <CompanyOverview /> {/* Pass company data if needed */}
               </div>
 
               {/* Deadline */}
