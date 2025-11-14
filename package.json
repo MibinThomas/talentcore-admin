@@ -20,7 +20,12 @@
     "react-toastify": "^11.0.5",
     "recharts": "^3.3.0",
     "redux-persist": "^6.0.0",
+<<<<<<< HEAD
     "sweetalert2": "^11.26.3"
+=======
+    "sweetalert2": "^11.26.3",
+    "toastr": "^2.1.4"
+>>>>>>> 2296d656cef496d1e15051c06f7478cd9befb7ac
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

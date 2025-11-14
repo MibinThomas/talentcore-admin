@@ -62,3 +62,34 @@ export const getApplicantsByJobAPI = async (params = {}) => {
   const query = new URLSearchParams(params).toString();
   return await commonAPI("GET", `${SERVER_URL}/admin/jobs/applications?${query}`);
 };
+<<<<<<< HEAD
+=======
+
+
+
+//Get all FAQs 
+export const getAllFAQAPI = async () => {
+  return await commonAPI("GET", `${SERVER_URL}/admin/faqs`);
+};
+
+//Create a new FAQ
+export const createFAQAPI = async (reqBody) => {
+  return await commonAPI("POST", `${SERVER_URL}/admin/faqs`, reqBody);
+};
+
+//Update FAQ by ID
+export const updateFAQByIdAPI = async (id, reqBody) => {
+  return await commonAPI("PUT", `${SERVER_URL}/admin/faqs/${id}`, reqBody);
+};
+
+//Delete FAQ by ID
+export const deleteFAQByIdAPI = async (id) => {
+  return await commonAPI("DELETE", `${SERVER_URL}/admin/faqs/${id}`);
+};
+
+//Toggle FAQ Active/Inactive Status
+export const toggleFAQStatusAPI = async (id) => {
+  return await commonAPI("PATCH", `${SERVER_URL}/admin/faqs/${id}/toggle`);
+};
+
+>>>>>>> 2296d656cef496d1e15051c06f7478cd9befb7ac
