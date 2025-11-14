@@ -1,9 +1,10 @@
 import ViewAllApplicants from '@/src/components/jobs-management/ViewAllApplicants'
 import React from 'react'
 
-function page() {
+async function page({params}) {
+  const {id}=await params;
   return (
-    <ViewAllApplicants/>
+    <ViewAllApplicants jobId={id}/>
   )
 }
 

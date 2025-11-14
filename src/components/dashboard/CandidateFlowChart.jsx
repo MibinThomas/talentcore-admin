@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from "react";
+
+import { getCandidateGraphAPI } from "@/src/services/allAPI";
+import React, { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -13,29 +15,38 @@ import {
 
 function CandidateFlowChart() {
   const [view, setView] = useState("monthly");
+  const [data, setData] = useState([]);
 
-  // Example dataset
-  const data = [
-    { name: "January", Applied: 10, Hired: 5 },
-    { name: "February", Applied: 190, Hired: 50 },
-    { name: "March", Applied: 140, Hired: 40 },
-    { name: "April", Applied: 110, Hired: 45 },
-    { name: "May", Applied: 90, Hired: 60 },
-    { name: "June", Applied: 70, Hired: 40 },
-    { name: "July", Applied: 150, Hired: 100 },
-    { name: "August", Applied: 150, Hired: 100 },
-    { name: "September", Applied: 150, Hired: 100 },
-    { name: "October", Applied: 150, Hired: 100 },
-    { name: "November", Applied: 150, Hired: 100 },
-    { name: "December", Applied: 150, Hired: 100 },
-  ];
+  // Fetch candidate flow data
+  const handleFetchCandidatesGraph = async (type) => {
+    try {
+      const result = await getCandidateGraphAPI(type);
+      if (result.status === 200 && result.data?.data) {
+        const formattedData = result.data.data.map((item) => ({
+          name: item.label,
+          Applied: item.applied,
+          Hired: item.hired,
+        }));
+        setData(formattedData);
+      } else {
+        console.error(result.response?.data?.message || "Error fetching data");
+      }
+    } catch (error) {
+      console.error("Error fetching candidate graph:", error);
+    }
+  };
+
+  // ✅ Fetch on view change
+  useEffect(() => {
+    handleFetchCandidatesGraph(view);
+  }, [view]);
 
   return (
     <div className="bg-white md:p-4 rounded-xl shadow-sm border border-gray-200 mt-6 w-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-3">
         <h2 className="text-lg sm:text-xl font-semibold text-gray-800 text-center sm:text-left">
-          Monthly Candidate Flow
+          Candidate Flow Overview
         </h2>
 
         {/* View Toggle Buttons */}
@@ -61,15 +72,28 @@ function CandidateFlowChart() {
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
-            margin={{ top: 10, right: 20, left: -10, bottom: 0 }}
+            margin={{
+              top: 10,
+              right: 20,
+              left: view === "annually" ? 50 : -10,
+              bottom: 0,
+            }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#00000050" />
-            <XAxis dataKey="name" tick={{ fill: "#666", fontSize: 12 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#00000030" />
+
+            {/*  Adaptive X-Axis for months/quarters/years */}
+            <XAxis
+              dataKey="name"
+              tick={{ fill: "#666", fontSize: 11 }}
+              interval={view === "monthly" ? 0 : "preserveEnd"}
+              angle={view === "monthly" ? -30 : 0}
+              textAnchor={view === "monthly" ? "end" : "middle"}
+            />
+
             <YAxis tick={{ fill: "#666", fontSize: 12 }} />
             <Tooltip />
             <Legend verticalAlign="bottom" height={36} />
 
-            {/* Applied Line */}
             <Line
               type="monotone"
               dataKey="Applied"
@@ -78,8 +102,6 @@ function CandidateFlowChart() {
               dot={{ r: 5, strokeWidth: 2, fill: "#facc15" }}
               activeDot={{ r: 7 }}
             />
-
-            {/* Hired Line */}
             <Line
               type="monotone"
               dataKey="Hired"

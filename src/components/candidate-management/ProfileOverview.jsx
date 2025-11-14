@@ -6,7 +6,7 @@ import { FaPhone } from "react-icons/fa";
 import { GoArrowLeft } from "react-icons/go";
 import { LuMail, LuMapPin } from "react-icons/lu";
 
-function ProfileOverview() {
+function ProfileOverview({data}) {
   return (
     <section className="py-10">
       <div className="">
@@ -29,9 +29,9 @@ function ProfileOverview() {
                 </button>
             </div>
           <div className="px-4 md:px-0">
-            {/* Name */}
+            {/* Name */}~
             <h1 className="text-white font-semibold text-[26px] md:text-[46px] mb-4">
-              Candidate Name
+            {data.firstName} {data.profile?.lastName}
             </h1>
             {/* Location & Email */}
             <div className="flex items-center justify-between flex-wrap gap-y-4">
@@ -39,15 +39,15 @@ function ProfileOverview() {
               <div className="flex flex-wrap gap-x-6 gap-3 text-white">
                 <span className="flex items-center gap-2 text-[18px]">
                   <LuMapPin size={18} />
-                  Thrissur,Kerala,India
+                 {data.profile?.location}
                 </span>
                 <span className="flex items-center gap-2 text-[18px]">
                   <FaPhone size={18} className="rotate-90" />
-                  97479303930
+                 {data.profile?.phone}
                 </span>
                 <span className="flex items-center gap-2 text-[18px]">
                   <LuMail size={18} />
-                  user@gmail.com
+                  {data.email}
                 </span>
               </div>
             </div>

@@ -2,29 +2,23 @@
 import React from "react";
 import { LuBanknote, LuClock4, LuMapPin, LuTrash } from "react-icons/lu";
 import EditJobModal from "../modal/EditJobModal";
-function JobCard() {
-  const job = {
-    title: "Frontend Developer",
-    companyName: "Google",
-    jobType: "Full Time",
-    location: "New York, USA",
-    salary: "$80,000",
-    timeAgo: "2 days ago",
-  };
-
+import { FaMapMarkerAlt } from "react-icons/fa";
+function JobCard({ job ,onUpdate}) {
+  console.log(job._id);
+  
   return (
     <div className="job-card lg:w-[350px] w-[320px] h-[330px] lg:h-[360px] rounded-[13px] bg-[linear-gradient(326deg,#3A0367_12.55%,#6E07C3_82.83%)]">
       <div className="card_container h-full px-6 py-2">
         <div className="card__details w-full h-full flex flex-col items-start justify-evenly">
-          <div className="flex items-start justify-between">
-              <h4 className="text-white text-[30px] font-[600] leading-[1.1] max-w-[80%]">
-                {job?.title}
-              </h4>
-              <EditJobModal />
+          <div className="w-full flex items-start justify-between">
+            <h4 className="text-white text-[30px] font-[600] leading-[1.1] max-w-[80%]">
+              {job?.title}
+            </h4>
+            <EditJobModal job={job} onUpdate={onUpdate} />
           </div>
           <div className="card__sub-title flex items-center text-[#EFDAFF]">
             <span className="text-[18px] leading-[1.2]">
-              {job?.companyName}
+              {job?.companyData?.name}
             </span>
             <span className="separator w-[1px] h-[15px] bg-white mx-2"></span>
             <span className="text-[18px] leading-[1.2]">{job?.jobType}</span>
@@ -36,7 +30,7 @@ function JobCard() {
                 className="text-white text-[16px] leading-[1.2]"
               />
               <span className="text-[#EFDAFF] text-[16px] font-normal">
-                {job?.location}
+                {job?.location?.place}
               </span>
             </div>
             <div className="job-card__salary flex items-center gap-4">
@@ -45,7 +39,7 @@ function JobCard() {
                 className="text-white text-[16px] leading-[1.2]"
               />
               <span className="text-[#EFDAFF] text-[16px] font-normal">
-                {job?.salary}
+                {job?.salary?.min} - {job?.salary?.max} {job?.salary?.currency}
               </span>
             </div>
             <div className="job-card__location flex items-center gap-4">
@@ -58,12 +52,12 @@ function JobCard() {
               </span>
             </div>
             <div className="job-card__location flex items-center gap-4">
-              <LuBanknote
+              <FaMapMarkerAlt
                 size={20}
                 className="text-white text-[16px] leading-[1.2]"
               />
               <span className="text-[#EFDAFF] text-[16px] font-normal">
-                Remote
+                {job?.location?.type}
               </span>
             </div>
           </div>
@@ -75,7 +69,7 @@ function JobCard() {
               Active
             </button>
             <button className="bg-white p-3 rounded-[10px]">
-                <LuTrash size={20} className="text-black" />
+              <LuTrash size={20} className="text-black" />
             </button>
           </div>
         </div>

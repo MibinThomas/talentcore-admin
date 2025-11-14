@@ -23,7 +23,7 @@ function Sidebar() {
       label: "Job Application Management",
       // path: "/job-application-management",
       subItems: [
-        { label: "Company Section", path: "/job-application-management/companies" },
+        { label: "Company Section", path: "/companies" },
         { label: "Job Management", path: "/jobs/jobs-management" },
         { label: "Interview Scheduling", path: "/job-application-management/interviews" },
       ],
@@ -39,7 +39,8 @@ function Sidebar() {
       label: "Support and Moderation",
       path: "/support-and-moderation",
     },
-    { id: 7, label: "Settings", path: "/settings" },
+    { id: 7, label: "FAQ", path: "/faq" },
+    { id: 8, label: "Settings", path: "/settings" },
   ];
 
   const handleDropdownToggle = () => {
