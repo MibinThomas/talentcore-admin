@@ -3,13 +3,13 @@
 import React from "react";
 import { LuBuilding2 } from "react-icons/lu";
 
-function CompanyOverview() {
+function CompanyOverview({companyDetails}) {
   const company = {
-    name: "Techflow Solutions",
-    industry: "Technology Services",
-    size: "200-500 employees",
-    founded: "2020",
-    website: "www.techflow.com",
+    name: companyDetails?.name || "",
+    industry: companyDetails?.industry || "",
+    size: companyDetails?.companySize || "",
+    founded: companyDetails?.foundedYear || "",
+    website: companyDetails?.website || "",
   };
 
   // Create a label mapping to show nice titles instead of raw keys

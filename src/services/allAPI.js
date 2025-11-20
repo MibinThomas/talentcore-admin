@@ -55,19 +55,26 @@ export const addNewJobAPI = async (reqBody) => {
 
 export const updateJobDetailsByIdAPI = async (id, reqBody) => {
   return await commonAPI("PUT", `${SERVER_URL}/admin/jobs/${id}`, reqBody);
-};  
+};
 
-
+// applicants management
 export const getApplicantsByJobAPI = async (params = {}) => {
   const query = new URLSearchParams(params).toString();
-  return await commonAPI("GET", `${SERVER_URL}/admin/jobs/applications?${query}`);
+  return await commonAPI(
+    "GET",
+    `${SERVER_URL}/admin/jobs/applications?${query}`
+  );
 };
+
+export const getApplicationDetailsByIdAPI = async (applicationId) => {
+  return await commonAPI("GET", `${SERVER_URL}/admin/jobs/applications/${applicationId}`);
+}
 
 export const getJobDetailsByIdAPI = async (id) => {
   return await commonAPI("GET", `${SERVER_URL}/admin/jobs/${id}`);
-}
+};
 
-//Get all FAQs 
+//Get all FAQs
 export const getAllFAQAPI = async () => {
   return await commonAPI("GET", `${SERVER_URL}/admin/faqs`);
 };
@@ -90,4 +97,50 @@ export const deleteFAQByIdAPI = async (id) => {
 //Toggle FAQ Active/Inactive Status
 export const toggleFAQStatusAPI = async (id) => {
   return await commonAPI("PATCH", `${SERVER_URL}/admin/faqs/${id}/toggle`);
+};
+
+// interview management
+export const scheduleInterviewAPI = async (reqBody) => {
+  return await commonAPI(
+    "POST",
+    `${SERVER_URL}/admin/interview/schedule`,
+    reqBody
+  );
+};
+
+// subscription plan
+
+export const getAllSubscriptionPlansAPI = async () => {
+  return await commonAPI("GET", `${SERVER_URL}/admin/subscription-plans`);
+};
+
+export const createSubscriptionPlanAPI = async (reqBody) => {
+  return await commonAPI(
+    "POST",
+    `${SERVER_URL}/admin/subscription-plans`,
+    reqBody
+  );
+};
+
+export const updateSubscriptionPlanAPI = async (id, reqBody) => {
+  return await commonAPI(
+    "PUT",
+    `${SERVER_URL}/admin/subscription-plans/${id}`,
+    reqBody
+  );
+};
+
+export const toggleSubscriptionPlanStatusAPI = async (id) => {
+  return await commonAPI(
+    "PATCH",
+    `${SERVER_URL}/admin/subscription-plans/${id}/status`
+  );
+};
+
+export const getCandidatesByPlanAPI = async (queryParams = {}) => {
+  const query = new URLSearchParams(queryParams).toString();
+  return await commonAPI(
+    "GET",
+    `${SERVER_URL}/admin/subscription-plans/users?${query}`
+  );
 };

@@ -3,8 +3,15 @@ import React from "react";
 import { LuBanknote, LuClock4, LuMapPin, LuTrash } from "react-icons/lu";
 import EditJobModal from "../modal/EditJobModal";
 import { FaMapMarkerAlt } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 function JobCard({ job ,onUpdate}) {
-  console.log(job._id);
+  // console.log(job._id);
+
+  const router = useRouter();
+
+  const handleNavigate = () => {
+    router.push(`/jobs/jobs-management/view/${job._id}`);
+  }
   
   return (
     <div className="job-card lg:w-[350px] w-[320px] h-[330px] lg:h-[360px] rounded-[13px] bg-[linear-gradient(326deg,#3A0367_12.55%,#6E07C3_82.83%)]">
@@ -64,9 +71,10 @@ function JobCard({ job ,onUpdate}) {
           <div className="w-full flex items-center justify-between gap-2">
             <button
               type="button"
+              onClick={handleNavigate}
               className="btn bg-white w-full text-[18px] py-[.7rem] rounded-[5px] text-primary font-medium leading-none "
             >
-              Active
+              View Details
             </button>
             <button className="bg-white p-3 rounded-[10px]">
               <LuTrash size={20} className="text-black" />

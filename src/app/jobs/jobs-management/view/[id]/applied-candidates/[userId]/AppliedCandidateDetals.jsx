@@ -1,7 +1,8 @@
 "use client";
 import ScheduleInterviewModal from "@/src/components/common/modal/ScheduleInterviewModal";
+import { getApplicationDetailsByIdAPI } from "@/src/services/allAPI";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaBriefcase,
   FaGraduationCap,
@@ -12,6 +13,7 @@ import {
   FaPhone,
 } from "react-icons/fa";
 import { LuDownload } from "react-icons/lu";
+import Swal from "sweetalert2";
 
 const experiences = [
   {
@@ -80,9 +82,33 @@ const quickLinks = [
   },
 ];
 
-export default function ResumeExperiencePage() {
+export default function ResumeExperiencePage({ applicationId }) {
   const [showModal, setShowModal] = useState(false);
+  const [data, setData] = useState({});
+  console.log(applicationId);
 
+  const handleFetchApplicationDetails = async () => {
+    try {
+      const result = await getApplicationDetailsByIdAPI(applicationId);
+      if (result.status === 200) {
+        setData(result.data.application);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title:
+            result?.response?.data?.message ||
+            "Error fetching application details",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+    useEffect(() => {
+      handleFetchApplicationDetails();
+    }, [applicationId]);
   return (
     <div className="min-h-screen bg-gray-50 ">
       <div className="container mx-auto bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -240,6 +266,7 @@ export default function ResumeExperiencePage() {
       <ScheduleInterviewModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
+        applicationId={applicationId}
       />
     </div>
   );

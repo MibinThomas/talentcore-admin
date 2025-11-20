@@ -25,22 +25,19 @@ function Sidebar() {
       subItems: [
         { label: "Company Section", path: "/companies" },
         { label: "Job Management", path: "/jobs/jobs-management" },
-        { label: "Interview Scheduling", path: "/job-application-management/interviews" },
+        {
+          label: "Interview Scheduling",
+          path: "/job-application-management/interviews",
+        },
       ],
     },
-    { id: 4, label: "Communication", path: "/communication" },
     {
-      id: 5,
+      id: 4,
       label: "Subscription Plan",
       path: "/subscription-plan",
     },
-    {
-      id: 6,
-      label: "Support and Moderation",
-      path: "/support-and-moderation",
-    },
-    { id: 7, label: "FAQ", path: "/faq" },
-    { id: 8, label: "Settings", path: "/settings" },
+    { id: 5, label: "FAQ", path: "/faq" },
+    { id: 6, label: "Settings", path: "/settings" },
   ];
 
   const handleDropdownToggle = () => {
@@ -117,7 +114,9 @@ function Sidebar() {
                     >
                       <span>{item.label}</span>
                       <HiChevronDown
-                        className={`transition-transform duration-300 ${openDropdown ? "rotate-180" : ""}`}
+                        className={`transition-transform duration-300 ${
+                          openDropdown ? "rotate-180" : ""
+                        }`}
                         size={20}
                       />
                     </button>
@@ -167,9 +166,7 @@ function Sidebar() {
 
           {/* logout button */}
           <div className="mt-10 flex items-center justify-center">
-            <button 
-              className="text-white flex items-center justify-center gap-2 px-4 py-1 rounded-[10px] bg-primary"
-            >
+            <button className="text-white flex items-center justify-center gap-2 px-4 py-1 rounded-[10px] bg-primary">
               <MdLogout size={20} />
               Logout
             </button>

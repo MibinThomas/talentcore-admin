@@ -27,13 +27,14 @@ const ViewAllApplicants = ({ jobId }) => {
   };
 
   const handleFetchApplicants = async () => {
+    // console.log("JobId is ", jobId);
     try {
       setIsLoading(true);
       const queryParams = {
         status,
+        jobId,
         page,
         limit,
-        jobId,
       };
 
       const result = await getApplicantsByJobAPI(queryParams);

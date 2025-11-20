@@ -1,9 +1,10 @@
 import React from 'react'
 import AppliedCandidateDetals from './AppliedCandidateDetals'
 
-function Page() {
+async function Page({params}) {
+  const {userId} = await params;
   return (
-    <AppliedCandidateDetals />
+    <AppliedCandidateDetals applicationId = {userId}/>
   )
 }
 

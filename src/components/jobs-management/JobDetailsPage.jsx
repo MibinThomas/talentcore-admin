@@ -24,7 +24,6 @@ function JobDetailsPage({ jobId }) {
   const router = useRouter();
 
   console.log(jobId);
-  
 
   // Dummy data for job details
   const jobDetails = {
@@ -80,8 +79,8 @@ function JobDetailsPage({ jobId }) {
     setLoading(true);
     try {
       const result = await getJobDetailsByIdAPI(jobId);
-      console.log("JobDetails",result.data.job);
-      
+      console.log("JobDetails", result.data.job);
+
       if (result.status === 200) {
         setLoading(false);
         setJob(result.data.job);
@@ -103,6 +102,11 @@ function JobDetailsPage({ jobId }) {
   if (loading) {
     return <div>Loading job details...</div>; // Simple loading fallback
   }
+
+  // Format salary string
+  const salaryText = job?.salary
+    ? `${job.salary.min} - ${job.salary.max} ${job.salary.currency}`
+    : "Not specified";
 
   return (
     <section className="w-full min-h-screen md:py-10 py-6">
@@ -140,18 +144,18 @@ function JobDetailsPage({ jobId }) {
           <div className="job-details__header-content p-4">
             <div className="leading-none text-start border-b border-gray-300 pb-6">
               <h1 className="Job__title text-primary font-bold md:text-[48px] text-[30px] mb-2">
-                {jobDetails.title}
+                {job?.title}
               </h1>
               <div className="flex md:items-center text-start justify-between md:flex-row flex-col gap-2">
                 <span className="job__company-name md:text-[20px] text-[16px] text-[#6D758F] font-semibold">
-                  {jobDetails.company}
+                  {job?.companyId?.companyName || "Company Name"}
                 </span>
                 <div className="flex items-center lg:justify-start justify-between gap-8 mt-2">
                   <span className="text-secondary lg:text-[18px] text-[16px] font-medium">
-                    {jobDetails.postedTime}
+                    Posted {new Date(job.createdAt).toDateString()}
                   </span>
                   <span className="text-secondary lg:text-[18px] text-[16px] font-medium">
-                    5 - 10 yrs
+                    {job.experienceLevel || "N/A"} yrs
                   </span>
                 </div>
               </div>
@@ -163,7 +167,7 @@ function JobDetailsPage({ jobId }) {
               <div className="flex items-center gap-3 leading-none">
                 <LuMapPin size={18} className="text-gray-500" />
                 <span className="text-primary font-normal lg:text-[16px] text-[14px]">
-                  {jobDetails.location}
+                  {job.location?.place || "Not specified"}
                 </span>
               </div>
 
@@ -171,7 +175,7 @@ function JobDetailsPage({ jobId }) {
               <div className="flex items-center gap-3 leading-none">
                 <LuWallet size={18} className="text-gray-500" />
                 <span className="text-primary font-normal lg:text-[16px] text-[14px]">
-                  {jobDetails.salary}
+                  {salaryText}
                 </span>
               </div>
 
@@ -179,14 +183,14 @@ function JobDetailsPage({ jobId }) {
               <div className="flex items-center gap-3 leading-none">
                 <LuClock size={18} className="text-gray-500" />
                 <span className="text-primary font-normal lg:text-[16px] text-[14px]">
-                  {jobDetails.postedTime}
+                  {new Date(job.createdAt).toLocaleDateString()}
                 </span>
               </div>
               {/* Total Applicants */}
               <div className="flex items-center gap-3 leading-none">
                 <LuUsersRound size={18} className="text-gray-500" />
                 <span className="text-primary font-normal lg:text-[16px] text-[14px]">
-                  {jobDetails.totalApplicants} applicants
+                 {job?.totalApplications || 0} applicants
                 </span>
               </div>
             </div>
@@ -200,42 +204,41 @@ function JobDetailsPage({ jobId }) {
                   Job Description
                 </h4>
                 <p className="content text-[#303030] md:text-[16px] text-[14px]">
-                  {jobDetails.description}
+                  {job.description}
                 </p>
               </div>
 
               {/* Key Responsibilities */}
-              {jobDetails.responsibilities &&
-                jobDetails.responsibilities.length > 0 && (
-                  <div className="job__description w-full rounded-[13px] border border-[#D9D9D9] md:px-8 md:py-6 p-4">
-                    <h4 className="font-semibold text-black md:text-[30px] text-[24px] mb-4">
-                      Key Responsibilities
-                    </h4>
-                    <div className="md:pl-8 pl-6">
-                      <ol className="list-disc flex flex-col gap-3">
-                        {jobDetails.responsibilities.map((value, index) => (
-                          <li
-                            key={index}
-                            className="content text-[#303030] md:text-[16px] text-[14px]"
-                          >
-                            {value}
-                          </li>
-                        ))}
-                      </ol>
-                    </div>
+              {job.responsibilities?.length > 0 && (
+                <div className="job__description w-full rounded-[13px] border border-[#D9D9D9] md:px-8 md:py-6 p-4">
+                  <h4 className="font-semibold text-black md:text-[30px] text-[24px] mb-4">
+                    Key Responsibilities
+                  </h4>
+                  <div className="md:pl-8 pl-6">
+                    <ol className="list-disc flex flex-col gap-3">
+                      {job.responsibilities.map((value, index) => (
+                        <li
+                          key={index}
+                          className="content text-[#303030] md:text-[16px] text-[14px]"
+                        >
+                          {value}
+                        </li>
+                      ))}
+                    </ol>
                   </div>
-                )}
+                </div>
+              )}
 
               {/* Requirements */}
-              {jobDetails.requirements &&
-                jobDetails.requirements.length > 0 && (
+              {job?.requirements &&
+                job?.requirements.length > 0 && (
                   <div className="job__description w-full rounded-[13px] border border-[#D9D9D9] md:px-8 md:py-6 p-4">
                     <h4 className="font-semibold text-black md:text-[30px] text-[24px] mb-4">
                       Requirements
                     </h4>
                     <div className="md:pl-8 pl-6">
                       <ol className="list-disc flex flex-col gap-3">
-                        {jobDetails.requirements.map((value, index) => (
+                        {job?.requirements.map((value, index) => (
                           <li
                             key={index}
                             className="content text-[#303030] md:text-[16px] text-[14px]"
@@ -249,14 +252,14 @@ function JobDetailsPage({ jobId }) {
                 )}
 
               {/* Skills */}
-              {jobDetails.skills && jobDetails.skills.length > 0 && (
+              {job?.skills && job?.skills.length > 0 && (
                 <div className="job__description w-full rounded-[13px] border border-[#D9D9D9] md:px-8 md:py-6 p-4">
                   <h4 className="font-semibold text-black md:text-[30px] text-[24px] mb-4">
                     Skills
                   </h4>
                   <div className="">
                     <div className="flex items-center justify-start md:gap-6 gap-3 flex-wrap">
-                      {jobDetails.skills.map((value, index) => (
+                      {job?.skills.map((value, index) => (
                         <span
                           key={index}
                           className="content text-secondary font-medium md:text-[16px] text-[14px] border border-[#872CD1] px-3 py-1 rounded-[5px]"
@@ -270,7 +273,7 @@ function JobDetailsPage({ jobId }) {
               )}
 
               {/* Benefits and Perks */}
-              {jobDetails.benefits && jobDetails.benefits.length > 0 && (
+              {job?.benefits && job?.benefits.length > 0 && (
                 <div className="job__description w-full rounded-[13px] border border-[#D9D9D9] md:px-8 md:py-6 p-4">
                   <h4 className="font-semibold text-black md:text-[30px] text-[24px] mb-4">
                     Benefits and Perks
@@ -278,8 +281,8 @@ function JobDetailsPage({ jobId }) {
                   <div className="md:pl-8 pl-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Left column */}
                     <ol className="list-disc flex flex-col gap-3">
-                      {jobDetails.benefits
-                        .slice(0, Math.ceil(jobDetails.benefits.length / 2))
+                      {job?.benefits
+                        .slice(0, Math.ceil(job?.benefits.length / 2))
                         .map((value, index) => (
                           <li
                             key={index}
@@ -292,8 +295,8 @@ function JobDetailsPage({ jobId }) {
 
                     {/* Right column */}
                     <ol className="list-disc flex flex-col gap-3">
-                      {jobDetails.benefits
-                        .slice(Math.ceil(jobDetails.benefits.length / 2))
+                      {job?.benefits
+                        .slice(Math.ceil(job?.benefits.length / 2))
                         .map((value, index) => (
                           <li
                             key={index}
@@ -312,7 +315,7 @@ function JobDetailsPage({ jobId }) {
           <div className="lg:col-span-4 col-span-1">
             <div className="flex flex-col gap-4">
               <div className="flex border border-[#D9D9D9] p-6 rounded-[13px]">
-                <CompanyOverview /> {/* Pass company data if needed */}
+                <CompanyOverview  companyDetails={job?.companyId}/> {/* Pass company data if needed */}
               </div>
 
               {/* Deadline */}
@@ -326,7 +329,7 @@ function JobDetailsPage({ jobId }) {
                       Application Deadline
                     </h6>
                     <span className="text-[#D39672] text-[14px]">
-                      {jobDetails.deadline}
+                       {new Date(job.applicationDeadline).toDateString()}
                     </span>
                   </div>
                 </div>
