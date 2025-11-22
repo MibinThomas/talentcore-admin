@@ -67,8 +67,11 @@ export const getApplicantsByJobAPI = async (params = {}) => {
 };
 
 export const getApplicationDetailsByIdAPI = async (applicationId) => {
-  return await commonAPI("GET", `${SERVER_URL}/admin/jobs/applications/${applicationId}`);
-}
+  return await commonAPI(
+    "GET",
+    `${SERVER_URL}/admin/jobs/applications/${applicationId}`
+  );
+};
 
 export const getJobDetailsByIdAPI = async (id) => {
   return await commonAPI("GET", `${SERVER_URL}/admin/jobs/${id}`);

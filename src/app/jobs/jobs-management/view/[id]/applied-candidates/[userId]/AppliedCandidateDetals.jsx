@@ -105,17 +105,35 @@ export default function ResumeExperiencePage({ applicationId }) {
     }
   };
 
+  console.log(data);
 
-    useEffect(() => {
-      handleFetchApplicationDetails();
-    }, [applicationId]);
+  const handleDownloadResume = (url) => {
+    if (!url) {
+      Swal.fire({
+        icon: "error",
+        title: "No Resume Found",
+        text: "The resume file is not available for download.",
+      });
+      return;
+    }
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = url.substring(url.lastIndexOf("/") + 1);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  useEffect(() => {
+    handleFetchApplicationDetails();
+  }, [applicationId]);
   return (
     <div className="min-h-screen bg-gray-50 ">
       <div className="container mx-auto bg-white rounded-2xl shadow-sm overflow-hidden">
         {/* Schedule Interview Button*/}
         <div className="flex flex-wrap justify-end gap-3 mt-5">
           <button className="text-[16px] text-white bg-green-700 px-8 py-1 rounded-[10px] ">
-            Applied
+            {data?.status}
           </button>
           <button
             type="button"
@@ -131,22 +149,20 @@ export default function ResumeExperiencePage({ applicationId }) {
           <div className="">
             <div>
               <h1 className="md:text-[40px] text-[36px] font-semibold text-black leading-none">
-                John Doe
+                {data?.candidate?.firstName} {data?.candidate?.lastName}
               </h1>
-              <p className="text-black mt-1 text-[16px]">
-                Senior UI/UX Designer
-              </p>
+              <p className="text-black mt-1 text-[16px]">{data?.job?.title}</p>
             </div>
             {/* Contact Info */}
             <div className="flex flex-col md:flex-row justify-start md:gap-6 gap-3 mt-4 text-sm text-black">
               <div className="flex items-center gap-2">
-                <FaMapMarkerAlt /> San Francisco, CA
+                <FaMapMarkerAlt /> {data?.candidate?.location}
               </div>
               <div className="flex items-center gap-2">
-                <FaPhone className="rotate-90" /> +1 (555) 123-4567
+                <FaPhone className="rotate-90" /> {data?.candidate?.phoneNumber}
               </div>
               <div className="flex items-center gap-2">
-                <FaEnvelope /> john.doe@email.com
+                <FaEnvelope /> {data?.candidate?.email}
               </div>
             </div>
 
@@ -252,9 +268,13 @@ export default function ResumeExperiencePage({ applicationId }) {
               </h4>
               <div className="flex items-center justify-between text-sm border border-gray-400 p-3 rounded-md">
                 <div className="flex items-center gap-2 text-gray-700">
-                  John_doe_Resume.pdf
+                  {data?.resume?.fileName}
                 </div>
-                <button className="text-gray-">
+                <button
+                  type="button"
+                  onClick={() => handleDownloadResume(data?.resume?.url)}
+                  className="cursor-pointer"
+                >
                   <LuDownload />
                 </button>
               </div>

@@ -115,7 +115,7 @@ function JobDetailsPage({ jobId }) {
           <div className="flex items-center justify-between">
             <div className="back-to-home__btn">
               <Link
-                href="/jobs"
+                href="/jobs/jobs-management"
                 className="text-black/80 font-normal text-[16px] leading-[1.2] flex items-center gap-2 hover:text-[#872CD1] hover:translate-x-[-10px] transition-all duration-300"
               >
                 <LuArrowLeft size={20} className="text-[#4D008C]" />

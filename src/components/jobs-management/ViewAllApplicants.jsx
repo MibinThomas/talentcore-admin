@@ -1,8 +1,9 @@
 "use client";
 import { getApplicantsByJobAPI } from "@/src/services/allAPI";
-import { setLoading } from "@/src/store/slices/authSlice";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
+import { LuChevronDown } from "react-icons/lu";
 import Swal from "sweetalert2";
 
 const ViewAllApplicants = ({ jobId }) => {
@@ -10,11 +11,20 @@ const ViewAllApplicants = ({ jobId }) => {
   const [page, setPage] = useState(1);
   const [limit] = useState(9);
   const [totalPages, setTotalPages] = useState(1);
-  const [status, setStatus] = useState("applied");
+  const [status, setStatus] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const router = useRouter();
+  const allStatuses = [
+    "applied",
+    "under-review",
+    "short-listed",
+    "rejected",
+    "hired",
+  ];
 
-  // Map each status to a color
+  // Map status to color
   const getStatusColor = (status) => {
     const colors = {
       applied: "bg-blue-500",
@@ -27,7 +37,6 @@ const ViewAllApplicants = ({ jobId }) => {
   };
 
   const handleFetchApplicants = async () => {
-    // console.log("JobId is ", jobId);
     try {
       setIsLoading(true);
       const queryParams = {
@@ -46,7 +55,7 @@ const ViewAllApplicants = ({ jobId }) => {
           Swal.fire({
             icon: "info",
             title: "No Applicants Found",
-            text: "No candidates are available for this job or status.",
+            text: "No candidates available for this job or status.",
             confirmButtonColor: "#000",
           });
         }
@@ -61,7 +70,6 @@ const ViewAllApplicants = ({ jobId }) => {
         });
       }
     } catch (error) {
-      console.log("Error fetching applicants:", error);
       Swal.fire({
         icon: "error",
         title: "Fetch Failed",
@@ -71,6 +79,11 @@ const ViewAllApplicants = ({ jobId }) => {
       setIsLoading(false);
     }
   };
+
+  const handleNavigateToView = (applicationId) => {
+    router.push(`/jobs/jobs-management/view/${jobId}/applied-candidates/${applicationId}`);
+  }
+
 
   useEffect(() => {
     handleFetchApplicants();
@@ -89,8 +102,9 @@ const ViewAllApplicants = ({ jobId }) => {
           </p>
         </div>
 
-        {/* Search */}
+        {/* Search + Filter */}
         <div className="w-full flex md:flex-row flex-col items-center justify-start gap-3">
+          {/* Search */}
           <div className="md:w-[80%] w-full flex items-center border border-gray-300 rounded-lg px-3 py-1.5 ">
             <IoSearchOutline className="text-gray-500 text-[18px]" />
             <input
@@ -100,6 +114,54 @@ const ViewAllApplicants = ({ jobId }) => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+          </div>
+
+          {/* Status Filter */}
+          <div className="relative">
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="flex items-center gap-2 rounded-[8px] px-4 py-[8px] text-[15px] text-white bg-primary transition"
+            >
+              {status ? status : "Filter Status"}
+              <LuChevronDown
+                className={`transition-transform ${
+                  dropdownOpen ? "rotate-180" : "rotate-0"
+                }`}
+              />
+            </button>
+
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-lg shadow-md z-20">
+                <button
+                  onClick={() => {
+                    setStatus("");
+                    setPage(1);
+                    setDropdownOpen(false);
+                  }}
+                  className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                    status === "" ? "bg-gray-200 font-medium" : ""
+                  }`}
+                >
+                  All
+                </button>
+
+                {allStatuses.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setStatus(s);
+                      setPage(1);
+                      setDropdownOpen(false);
+                    }}
+                    className={`block w-full text-left px-4 py-2 text-sm capitalize hover:bg-gray-100 ${
+                      status === s ? "bg-gray-200 font-medium" : ""
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -122,6 +184,7 @@ const ViewAllApplicants = ({ jobId }) => {
                 <th className="py-3 px-6 font-semibold ">Action</th>
               </tr>
             </thead>
+
             <tbody>
               {applications.map((applicant, index) => {
                 const candidate = applicant.candidateDetails || {};
@@ -137,12 +200,16 @@ const ViewAllApplicants = ({ jobId }) => {
                     <td className="py-5 px-6 text-black font-medium ">
                       {fullName || "N/A"}
                     </td>
+
                     <td className="py-5 px-6 text-black ">
                       {candidate.email || "N/A"}
                     </td>
+
                     <td className="py-5 px-6 ">
                       {candidate.phoneNumber || "N/A"}
                     </td>
+
+                    {/* Status Display */}
                     <td className="py-5 px-6">
                       <div className="flex items-center gap-2">
                         <span
@@ -155,8 +222,13 @@ const ViewAllApplicants = ({ jobId }) => {
                         </span>
                       </div>
                     </td>
-                    <td className="py-3 px-6 text-center text-[14px] ">
-                      <button className="border border-gray-400 rounded-[5px] px-4 py-1 leading-none hover:bg-gray-200">
+
+                    {/* Action Button */}
+                    <td className="py-5 px-6">
+                      <button 
+                      type="button"
+                        onClick={() => handleNavigateToView(applicant._id)}
+                      className="border border-gray-400 rounded-[5px] px-4 py-1 text-[14px] hover:bg-gray-200">
                         View
                       </button>
                     </td>
