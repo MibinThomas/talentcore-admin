@@ -10,6 +10,16 @@ import {
 
 function CandidateProfileDetails({ data }) {
   const skillsList = data?.profile?.skills || [];
+
+  const handleDownloadResume = (url) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="w-full">
       <div className="container flex flex-col gap-6">
@@ -164,7 +174,7 @@ function CandidateProfileDetails({ data }) {
                     <LuBookOpenText className="w-[34px] h-[34px] lg:w-[44px] lg:h-[44px] text-[#4D008C]" />
                     <div className="flex flex-col">
                       <p className="text-lg lg:text-2xl font-[450] text-[#4D008C]">
-                        resume_{index + 1}.pdf
+                        {resume?.fileName}.pdf
                       </p>
                       <p className="text-sm lg:text-[17px] text-gray-600">
                         Uploaded{" "}
@@ -184,7 +194,7 @@ function CandidateProfileDetails({ data }) {
                   <div className="flex gap-3 self-end sm:self-center">
                     <button
                       type="button"
-                      onClick={() => handleDownloadResume(resume._id)}
+                      onClick={() => handleDownloadResume(resume.url)}
                       title="Download"
                     >
                       <LuDownload className="w-[20px] h-[20px] cursor-pointer text-[#4D008C]" />

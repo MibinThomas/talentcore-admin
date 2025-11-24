@@ -35,6 +35,7 @@ function StatsOverview() {
       id: 1,
       title: "Total Candidates Registered",
       count: count.candidatesCount,
+      link:"/candidate-management"
     },
     {
       id: 2,

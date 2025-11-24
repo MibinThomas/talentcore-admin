@@ -29,8 +29,9 @@ export const updateCompanyDetailsByIdAPI = async (id, reqBody) => {
 };
 
 //candidate management
-export const getAllCandidatesAPI = async () => {
-  return await commonAPI("GET", `${SERVER_URL}/admin/candidates`);
+export const getAllCandidatesAPI = async (query) => {
+  const queryString = new URLSearchParams(query).toString();
+  return await commonAPI("GET", `${SERVER_URL}/admin/candidates?${queryString}`);
 };
 export const getCandidatesDetailsByIdAPI = async (id) => {
   return await commonAPI("GET", `${SERVER_URL}/admin/candidates/${id}`);

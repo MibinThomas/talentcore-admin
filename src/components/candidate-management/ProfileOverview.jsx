@@ -6,7 +6,7 @@ import { FaPhone } from "react-icons/fa";
 import { GoArrowLeft } from "react-icons/go";
 import { LuMail, LuMapPin } from "react-icons/lu";
 
-function ProfileOverview({data}) {
+function ProfileOverview({ data }) {
   return (
     <section className="py-10">
       <div className="">
@@ -23,15 +23,19 @@ function ProfileOverview({data}) {
           className="w-full h-full border border-[#DBDBDB] xl:p-6 md:p-4 p-2 rounded-[10px] pb-6 md:py-10 bg-[#4D008C]
         "
         >
-            <div className="flex items-center justify-end">
-                <button className="text-white bg-green-600 py-2 px-6 leading-none rounded-[10px]">
-                    Active
-                </button>
-            </div>
+          <div className="flex items-center justify-end">
+            <button
+              className={`text-white ${
+                data?.status == "active" ? "bg-green-600" : "bg-red-600"
+              } py-2 px-6 leading-none rounded-[10px]`}
+            >
+              {data.status}
+            </button>
+          </div>
           <div className="px-4 md:px-0">
-            {/* Name */}~
+            {/* Name */}
             <h1 className="text-white font-semibold text-[26px] md:text-[46px] mb-4">
-            {data.firstName} {data.profile?.lastName}
+              {data.firstName} {data.profile?.lastName}
             </h1>
             {/* Location & Email */}
             <div className="flex items-center justify-between flex-wrap gap-y-4">
@@ -39,11 +43,11 @@ function ProfileOverview({data}) {
               <div className="flex flex-wrap gap-x-6 gap-3 text-white">
                 <span className="flex items-center gap-2 text-[18px]">
                   <LuMapPin size={18} />
-                 {data.profile?.location}
+                  {data.profile?.location}
                 </span>
                 <span className="flex items-center gap-2 text-[18px]">
                   <FaPhone size={18} className="rotate-90" />
-                 {data.profile?.phone}
+                  {data.profile?.phone}
                 </span>
                 <span className="flex items-center gap-2 text-[18px]">
                   <LuMail size={18} />
