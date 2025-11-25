@@ -25,10 +25,6 @@ function Sidebar() {
       subItems: [
         { label: "Company Section", path: "/companies" },
         { label: "Job Management", path: "/jobs/jobs-management" },
-        {
-          label: "Interview Scheduling",
-          path: "/job-application-management/interviews",
-        },
       ],
     },
     {

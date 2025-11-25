@@ -8,9 +8,9 @@ function Settings() {
   return (
     <div> 
         <AdminProfile/>
-        <SubscriptionManagement/>
+        {/* <SubscriptionManagement/> */}
         <SubscriptionEmails/>
-        <PasswordReset/>
+        {/* <PasswordReset/> */}
     </div>
   )
 }

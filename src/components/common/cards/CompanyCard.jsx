@@ -12,7 +12,7 @@ import Link from "next/link";
 
 function CompanyCard({ companyData, onUpdate }) {
   return (
-    <div className="company-card w-[330px] lg:w-[360px] h-auto rounded-[15px] bg-gradient-to-br from-[#2E0B57] to-[#6615A5] shadow-lg hover:shadow-xl transition-all duration-300">
+    <div className="company-card w-[330px] lg:w-[360px] h-[330px] rounded-[15px] bg-gradient-to-br from-[#2E0B57] to-[#6615A5] shadow-lg hover:shadow-xl transition-all duration-300">
       <div className="card_container h-full p-6 flex flex-col justify-between">
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
@@ -27,7 +27,8 @@ function CompanyCard({ companyData, onUpdate }) {
           {companyData?.industry}
         </p>
         <p className="text-[#CBAAFF] text-[14px] font-normal mb-4 leading-snug line-clamp-3">
-          {companyData?.description}
+          {companyData?.description?.slice(0, 100)}
+          {companyData?.description?.length > 100 ? "..." : ""}
         </p>
 
         {/* Info Grid */}

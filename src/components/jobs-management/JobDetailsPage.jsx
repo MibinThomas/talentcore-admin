@@ -7,11 +7,10 @@ import CompanyOverview from "./CompanyOverview.jsx";
 import { useRouter } from "next/navigation";
 import {
   LuArrowLeft,
-  LuBookmark,
+  LuArrowRight,
   LuCalendar,
   LuClock,
   LuMapPin,
-  LuShare2,
   LuUsersRound,
   LuWallet,
 } from "react-icons/lu";
@@ -24,56 +23,6 @@ function JobDetailsPage({ jobId }) {
   const router = useRouter();
 
   console.log(jobId);
-
-  // Dummy data for job details
-  const jobDetails = {
-    title: "Senior Frontend Developer",
-    company: "TechCorp Innovations",
-    location: "New York, NY, USA",
-    salary: "$120,000 - $150,000 annually",
-    postedTime: "Posted 2 days ago",
-    totalApplicants: 25,
-    description:
-      "We are seeking a talented Senior Frontend Developer to join our dynamic team at TechCorp Innovations. In this role, you will be responsible for building responsive and engaging user interfaces using modern web technologies. You will collaborate closely with UX designers, backend developers, and product managers to deliver high-quality features that enhance user experience. If you have a passion for clean code, performance optimization, and innovative design, this is the perfect opportunity for you.",
-    responsibilities: [
-      "Develop and maintain user-facing features using React.js and TypeScript",
-      "Collaborate with designers to implement pixel-perfect UI components",
-      "Optimize application performance and ensure cross-browser compatibility",
-      "Integrate APIs and third-party services to enhance functionality",
-      "Conduct code reviews and mentor junior developers on best practices",
-      "Stay updated with the latest frontend trends and tools",
-    ],
-    requirements: [
-      "Bachelor's degree in Computer Science or related field",
-      "5+ years of professional experience in frontend development",
-      "Proficiency in JavaScript, React, and state management libraries (e.g., Redux)",
-      "Strong understanding of HTML5, CSS3, and responsive design principles",
-      "Experience with build tools like Webpack or Vite",
-      "Excellent problem-solving skills and attention to detail",
-      "Ability to work in a fast-paced, agile environment",
-    ],
-    skills: [
-      "React",
-      "TypeScript",
-      "JavaScript (ES6+)",
-      "CSS/SCSS",
-      "Git",
-      "Webpack",
-      "RESTful APIs",
-    ],
-    benefits: [
-      "Competitive salary and performance-based bonuses",
-      "Comprehensive health, dental, and vision insurance",
-      "401(k) retirement plan with company matching",
-      "Unlimited paid time off and flexible working hours",
-      "Professional development budget for courses and conferences",
-      "Remote work options and home office stipend",
-      "Team-building events and wellness programs",
-      "Stock options and employee referral bonuses",
-    ],
-    deadline: "November 15, 2025",
-    companyId: "techcorp-123", // Dummy company ID for CompanyOverview
-  };
 
   const handleFetchJobDetails = async () => {
     setLoading(true);
@@ -93,6 +42,10 @@ function JobDetailsPage({ jobId }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleNavigateToApplicantsPage = () => {
+    router.push(`/jobs/jobs-management/view/${jobId}/applied-candidates`);
   };
 
   useEffect(() => {
@@ -122,23 +75,6 @@ function JobDetailsPage({ jobId }) {
                 Back to job listing
               </Link>
             </div>
-            {/* share and save buttons */}
-            <div className="w-max flex items-center justify-end gap-4 ms-auto">
-              <button className="w-max p-1 border border-gray-300 rounded-[5px]">
-                <LuBookmark
-                  strokeWidth={1.5}
-                  size={22}
-                  className="relative text-[#4D008C]"
-                />
-              </button>
-              <button className="w-max p-1 border border-gray-300 rounded-[5px]">
-                <LuShare2
-                  strokeWidth={1.5}
-                  size={22}
-                  className="relative text-[#4D008C]"
-                />
-              </button>
-            </div>
           </div>
 
           <div className="job-details__header-content p-4">
@@ -148,7 +84,7 @@ function JobDetailsPage({ jobId }) {
               </h1>
               <div className="flex md:items-center text-start justify-between md:flex-row flex-col gap-2">
                 <span className="job__company-name md:text-[20px] text-[16px] text-[#6D758F] font-semibold">
-                  {job?.companyId?.companyName || "Company Name"}
+                  {job?.companyId?.name || "Company Name"}
                 </span>
                 <div className="flex items-center lg:justify-start justify-between gap-8 mt-2">
                   <span className="text-secondary lg:text-[18px] text-[16px] font-medium">
@@ -161,38 +97,52 @@ function JobDetailsPage({ jobId }) {
               </div>
             </div>
 
-            {/* location, salary, posted time */}
-            <div className="flex md:items-center md:flex-row flex-col md:gap-8 gap-3 text-gray-600 text-[14px]  pt-6">
-              {/* Location */}
-              <div className="flex items-center gap-3 leading-none">
-                <LuMapPin size={18} className="text-gray-500" />
-                <span className="text-primary font-normal lg:text-[16px] text-[14px]">
-                  {job.location?.place || "Not specified"}
-                </span>
-              </div>
+            <div className="flex items-center justify-between md:flex-row flex-col pt-6">
+              {/* location, salary, posted time */}
+              <div className="flex md:items-center md:flex-row flex-col md:gap-8 gap-3 text-gray-600 text-[14px]">
+                {/* Location */}
+                <div className="flex items-center gap-3 leading-none">
+                  <LuMapPin size={18} className="text-gray-500" />
+                  <span className="text-primary font-normal lg:text-[16px] text-[14px]">
+                    {job.location?.place || "Not specified"}
+                  </span>
+                </div>
 
-              {/* Salary */}
-              <div className="flex items-center gap-3 leading-none">
-                <LuWallet size={18} className="text-gray-500" />
-                <span className="text-primary font-normal lg:text-[16px] text-[14px]">
-                  {salaryText}
-                </span>
-              </div>
+                {/* Salary */}
+                <div className="flex items-center gap-3 leading-none">
+                  <LuWallet size={18} className="text-gray-500" />
+                  <span className="text-primary font-normal lg:text-[16px] text-[14px]">
+                    {salaryText}
+                  </span>
+                </div>
 
-              {/* Posted Time */}
-              <div className="flex items-center gap-3 leading-none">
-                <LuClock size={18} className="text-gray-500" />
-                <span className="text-primary font-normal lg:text-[16px] text-[14px]">
-                  {new Date(job.createdAt).toLocaleDateString()}
-                </span>
+                {/* Posted Time */}
+                <div className="flex items-center gap-3 leading-none">
+                  <LuClock size={18} className="text-gray-500" />
+                  <span className="text-primary font-normal lg:text-[16px] text-[14px]">
+                    {new Date(job.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+                {/* Total Applicants */}
+                <div className="flex items-center gap-3 leading-none">
+                  <LuUsersRound size={18} className="text-gray-500" />
+                  <span className="text-primary font-normal lg:text-[16px] text-[14px]">
+                    {job?.totalApplications || 0} applicants
+                  </span>
+                </div>
               </div>
-              {/* Total Applicants */}
-              <div className="flex items-center gap-3 leading-none">
-                <LuUsersRound size={18} className="text-gray-500" />
-                <span className="text-primary font-normal lg:text-[16px] text-[14px]">
-                 {job?.totalApplications || 0} applicants
-                </span>
-              </div>
+              <button
+                onClick={handleNavigateToApplicantsPage}
+                className={`bg-primary px-2 py-2 text-[14px] text-white ${
+                  job?.totalApplications === 0
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-[#6D0080]"
+                } rounded-md mt-4 md:mt-0 flex items-center justify-center gap-2  `}
+                disabled={job?.totalApplications === 0}
+              >
+                View Applicants{" "}
+                <LuArrowRight size={16} className="inline-block ml-1" />
+              </button>
             </div>
           </div>
         </div>
@@ -230,26 +180,25 @@ function JobDetailsPage({ jobId }) {
               )}
 
               {/* Requirements */}
-              {job?.requirements &&
-                job?.requirements.length > 0 && (
-                  <div className="job__description w-full rounded-[13px] border border-[#D9D9D9] md:px-8 md:py-6 p-4">
-                    <h4 className="font-semibold text-black md:text-[30px] text-[24px] mb-4">
-                      Requirements
-                    </h4>
-                    <div className="md:pl-8 pl-6">
-                      <ol className="list-disc flex flex-col gap-3">
-                        {job?.requirements.map((value, index) => (
-                          <li
-                            key={index}
-                            className="content text-[#303030] md:text-[16px] text-[14px]"
-                          >
-                            {value}
-                          </li>
-                        ))}
-                      </ol>
-                    </div>
+              {job?.requirements && job?.requirements.length > 0 && (
+                <div className="job__description w-full rounded-[13px] border border-[#D9D9D9] md:px-8 md:py-6 p-4">
+                  <h4 className="font-semibold text-black md:text-[30px] text-[24px] mb-4">
+                    Requirements
+                  </h4>
+                  <div className="md:pl-8 pl-6">
+                    <ol className="list-disc flex flex-col gap-3">
+                      {job?.requirements.map((value, index) => (
+                        <li
+                          key={index}
+                          className="content text-[#303030] md:text-[16px] text-[14px]"
+                        >
+                          {value}
+                        </li>
+                      ))}
+                    </ol>
                   </div>
-                )}
+                </div>
+              )}
 
               {/* Skills */}
               {job?.skills && job?.skills.length > 0 && (
@@ -315,7 +264,8 @@ function JobDetailsPage({ jobId }) {
           <div className="lg:col-span-4 col-span-1">
             <div className="flex flex-col gap-4">
               <div className="flex border border-[#D9D9D9] p-6 rounded-[13px]">
-                <CompanyOverview  companyDetails={job?.companyId}/> {/* Pass company data if needed */}
+                <CompanyOverview companyDetails={job?.companyId} />{" "}
+                {/* Pass company data if needed */}
               </div>
 
               {/* Deadline */}
@@ -329,7 +279,7 @@ function JobDetailsPage({ jobId }) {
                       Application Deadline
                     </h6>
                     <span className="text-[#D39672] text-[14px]">
-                       {new Date(job.applicationDeadline).toDateString()}
+                      {new Date(job.applicationDeadline).toDateString()}
                     </span>
                   </div>
                 </div>

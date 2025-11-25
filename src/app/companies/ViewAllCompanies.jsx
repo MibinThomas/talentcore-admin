@@ -10,13 +10,14 @@ import { LuChevronDown } from "react-icons/lu";
 function ViewAllCompanies() {
   const [companyData, setCompanyData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchterm, SetSearchTerm] = useState("");
 
   const handleFetchAllCompanies = async () => {
     try {
       setLoading(true);
       const result = await getAllCompaniesAPI();
       if (result.status === 200) {
-        setCompanyData(result?.data?.companies);
+        setCompanyData(result?.data?.companies || []);
       } else {
         console.log(result?.response?.data?.message);
       }
@@ -27,9 +28,24 @@ function ViewAllCompanies() {
     }
   };
 
+  const handleSearchChange = (e) => {
+    SetSearchTerm(e.target.value);
+  };
+
   useEffect(() => {
     handleFetchAllCompanies();
   }, []);
+
+  // Filter companies client-side (case-insensitive)
+  const filteredCompanies = companyData.filter((c) => {
+    if (!searchterm) return true;
+    const q = searchterm.trim().toLowerCase();
+    // adjust fields to search depending on your company object shape
+    const name = (c.name || "").toString().toLowerCase();
+    const industry = (c.industry || "").toString().toLowerCase();
+    const place = (c.place || "").toString().toLowerCase();
+    return name.includes(q) || industry.includes(q) || place.includes(q);
+  });
 
   return (
     <section className="w-full">
@@ -46,31 +62,35 @@ function ViewAllCompanies() {
             <input
               type="text"
               placeholder="Search"
+              value={searchterm}
+              onChange={handleSearchChange}
               className="ml-2 w-full outline-none bg-transparent text-[15px]"
             />
           </div>
-          <div className="md:w-[20%] w-full flex items-center md:justify-start justify-end">
+          {/* <div className="md:w-[20%] w-full flex items-center md:justify-start justify-end">
             <button className="flex shrink-0 items-center gap-2  rounded-[8px] px-4 py-[6px] text-[15px] text-white bg-primary transition">
               <FaSlidersH className="text-[16px]" />
               Filter
               <LuChevronDown />
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* View All Companies */}
         {loading ? (
           <div className="w-full h-[50vh] flex items-center justify-center">
-            <span className="text-primary text-[20px]">Loading companies...</span>
+            <span className="text-primary text-[20px]">
+              Loading companies...
+            </span>
           </div>
         ) : (
           <div className="flex flex-wrap gap-4 items-center justify-center">
-            {companyData?.length > 0 ? (
-              companyData?.map((item, index) => (
+            {filteredCompanies?.length > 0 ? (
+              filteredCompanies.map((item, index) => (
                 <CompanyCard
-                  key={index}
+                  key={item.id ?? index}
                   companyData={item}
-                  onUpdate={handleFetchAllCompanies} // ✅ Pass callback
+                  onUpdate={handleFetchAllCompanies}
                 />
               ))
             ) : (

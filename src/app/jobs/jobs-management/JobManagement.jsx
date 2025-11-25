@@ -68,7 +68,7 @@ function JobManagement() {
 
   useEffect(() => {
     handleFetchAllJobs();
-  }, [page, jobType]); // triggers on page, filter, or place change
+  }, [page, jobType, keyword, companyId]); // triggers on page, filter, or place change
 
   const handleSearch = (e) => {
     e.preventDefault();

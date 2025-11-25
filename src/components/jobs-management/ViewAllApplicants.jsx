@@ -1,10 +1,15 @@
 "use client";
-import { getApplicantsByJobAPI } from "@/src/services/allAPI";
+import {
+  getApplicantsByJobAPI,
+  updateApplicationStatusAPI,
+} from "@/src/services/allAPI";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { FaCalendarAlt, FaEye } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
 import { LuChevronDown } from "react-icons/lu";
 import Swal from "sweetalert2";
+import ScheduleInterviewModal from "../common/modal/ScheduleInterviewModal";
 
 const ViewAllApplicants = ({ jobId }) => {
   const [applications, setApplications] = useState([]);
@@ -14,7 +19,11 @@ const ViewAllApplicants = ({ jobId }) => {
   const [status, setStatus] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const [showModal, setShowModal] = useState(false);
+  const [applicationId, setApplicationId] = useState(null);
   const router = useRouter();
   const allStatuses = [
     "applied",
@@ -81,9 +90,64 @@ const ViewAllApplicants = ({ jobId }) => {
   };
 
   const handleNavigateToView = (applicationId) => {
-    router.push(`/jobs/jobs-management/view/${jobId}/applied-candidates/${applicationId}`);
-  }
+    router.push(
+      `/jobs/jobs-management/view/${jobId}/applied-candidates/${applicationId}`
+    );
+  };
 
+  const handleStatusUpdate = async (applicationId, newStatus) => {
+    try {
+      // Ask for confirmation before updating
+      const confirm = await Swal.fire({
+        title: "Are you sure?",
+        text: `Do you want to change status to "${newStatus}"?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, update",
+      });
+
+      // If user clicks cancel → stop here
+      if (!confirm.isConfirmed) return;
+
+      // Proceed with API call
+      const result = await updateApplicationStatusAPI(applicationId, {
+        status: newStatus,
+      });
+
+      if (result.status === 200) {
+        Swal.fire({
+          title: "Updated!",
+          text: "Status has been updated successfully.",
+          icon: "success",
+          confirmButtonColor: "#000",
+        });
+
+        // Refresh the list
+        handleFetchApplicants();
+        setStatusDropdownOpen(null);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Update Failed",
+          text: result?.response?.data?.message || "Something went wrong!",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to update status. Please try again.",
+      });
+    }
+  };
+
+  const handleOpenModal = (applicationId) => {
+    setApplicationId(applicationId);
+    setShowModal(true);
+  }
 
   useEffect(() => {
     handleFetchApplicants();
@@ -209,36 +273,97 @@ const ViewAllApplicants = ({ jobId }) => {
                       {candidate.phoneNumber || "N/A"}
                     </td>
 
-                    {/* Status Display */}
-                    <td className="py-5 px-6">
-                      <div className="flex items-center gap-2">
+                    {/* Status Display with Dropdown */}
+                    <td className="py-5 px-6 relative">
+                      <div
+                        onClick={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setDropdownPosition({
+                            top: rect.bottom + window.scrollY + 30, // clean spacing
+                            left: rect.left + window.scrollX + 4, // aligns perfectly
+                          });
+                          setStatusDropdownOpen((prev) =>
+                            prev === index ? null : index
+                          );
+                        }}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
                         <span
                           className={`w-2.5 h-2.5 rounded-full ${getStatusColor(
                             applicant.status
                           )}`}
                         ></span>
+
                         <span className="capitalize text-gray-800">
                           {applicant.status || "N/A"}
                         </span>
+
+                        <LuChevronDown className="text-gray-600 ml-1" />
                       </div>
                     </td>
 
                     {/* Action Button */}
                     <td className="py-5 px-6">
-                      <button 
-                      type="button"
-                        onClick={() => handleNavigateToView(applicant._id)}
-                      className="border border-gray-400 rounded-[5px] px-4 py-1 text-[14px] hover:bg-gray-200">
-                        View
-                      </button>
+                      <div className="flex items-center justify-start gap-4">
+                        <button
+                          type="button"
+                          onClick={() => handleNavigateToView(applicant._id)}
+                          className="hover:text-[#4D008C] transition-all duration-300"
+                        >
+                          <FaEye />
+                        </button>
+                        {applicant.status !== "hired" && (
+                          <button
+                            type="button"
+                            onClick={() => handleOpenModal(applicant._id)}
+                            className="px-3 py-2 rounded-md bg-purple-700 text-white text-sm font-medium hover:bg-purple-800 flex items-center gap-2"
+                          >
+                            <FaCalendarAlt /> Schedule Interview
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+          {statusDropdownOpen !== null && (
+            <div
+              className="fixed z-50 bg-white shadow-lg border border-gray-300 rounded-md"
+              style={{
+                top: dropdownPosition.top + 4,
+                left: dropdownPosition.left,
+                width: "160px",
+              }}
+            >
+              {allStatuses.map((s, i) => (
+                <button
+                  key={i}
+                  className={`block w-full text-left px-4 py-2 text-sm capitalize hover:bg-gray-100 ${
+                    applications[statusDropdownOpen]?.status === s
+                      ? "bg-gray-200 font-medium"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    handleStatusUpdate(applications[statusDropdownOpen]._id, s);
+                    setStatusDropdownOpen(null);
+                  }}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
+
+      {/* Modal */}
+      <ScheduleInterviewModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        applicationId={applicationId}
+      />
     </div>
   );
 };

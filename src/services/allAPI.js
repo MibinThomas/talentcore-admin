@@ -31,7 +31,10 @@ export const updateCompanyDetailsByIdAPI = async (id, reqBody) => {
 //candidate management
 export const getAllCandidatesAPI = async (query) => {
   const queryString = new URLSearchParams(query).toString();
-  return await commonAPI("GET", `${SERVER_URL}/admin/candidates?${queryString}`);
+  return await commonAPI(
+    "GET",
+    `${SERVER_URL}/admin/candidates?${queryString}`
+  );
 };
 export const getCandidatesDetailsByIdAPI = async (id) => {
   return await commonAPI("GET", `${SERVER_URL}/admin/candidates/${id}`);
@@ -64,6 +67,14 @@ export const getApplicantsByJobAPI = async (params = {}) => {
   return await commonAPI(
     "GET",
     `${SERVER_URL}/admin/jobs/applications?${query}`
+  );
+};
+
+export const updateApplicationStatusAPI = async (applicationId, reqBody) => {
+  return await commonAPI(
+    "PATCH",
+    `${SERVER_URL}/admin/jobs/applications/${applicationId}/status`,
+    reqBody
   );
 };
 
