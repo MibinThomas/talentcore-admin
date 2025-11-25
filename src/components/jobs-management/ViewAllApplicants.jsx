@@ -19,12 +19,17 @@ const ViewAllApplicants = ({ jobId }) => {
   const [status, setStatus] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+
+  // Modal states
   const [showModal, setShowModal] = useState(false);
   const [applicationId, setApplicationId] = useState(null);
+  const [existingInterview, setExistingInterview] = useState(null); // ← Important
+
   const router = useRouter();
+
   const allStatuses = [
     "applied",
     "under-review",
@@ -33,7 +38,6 @@ const ViewAllApplicants = ({ jobId }) => {
     "hired",
   ];
 
-  // Map status to color
   const getStatusColor = (status) => {
     const colors = {
       applied: "bg-blue-500",
@@ -48,17 +52,13 @@ const ViewAllApplicants = ({ jobId }) => {
   const handleFetchApplicants = async () => {
     try {
       setIsLoading(true);
-      const queryParams = {
-        status,
-        jobId,
-        page,
-        limit,
-      };
-
+      const queryParams = { status, jobId, page, limit };
       const result = await getApplicantsByJobAPI(queryParams);
 
       if (result.status === 200) {
         const { applications, total } = result.data;
+        setApplications(applications || []);
+        setTotalPages(total || 1);
 
         if (!applications || applications.length === 0) {
           Swal.fire({
@@ -68,13 +68,10 @@ const ViewAllApplicants = ({ jobId }) => {
             confirmButtonColor: "#000",
           });
         }
-
-        setApplications(applications || []);
-        setTotalPages(total || 1);
       } else {
         Swal.fire({
           icon: "error",
-          title: "Error Fetching Applicants",
+          title: "Error",
           text: result?.response?.data?.message || "Something went wrong!",
         });
       }
@@ -82,7 +79,7 @@ const ViewAllApplicants = ({ jobId }) => {
       Swal.fire({
         icon: "error",
         title: "Fetch Failed",
-        text: "Unable to fetch applicants. Please try again later.",
+        text: "Unable to fetch applicants.",
       });
     } finally {
       setIsLoading(false);
@@ -96,58 +93,45 @@ const ViewAllApplicants = ({ jobId }) => {
   };
 
   const handleStatusUpdate = async (applicationId, newStatus) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: `Change status to "${newStatus}"?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, update",
+    });
+
+    if (!confirm.isConfirmed) return;
+
     try {
-      // Ask for confirmation before updating
-      const confirm = await Swal.fire({
-        title: "Are you sure?",
-        text: `Do you want to change status to "${newStatus}"?`,
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, update",
-      });
-
-      // If user clicks cancel → stop here
-      if (!confirm.isConfirmed) return;
-
-      // Proceed with API call
-      const result = await updateApplicationStatusAPI(applicationId, {
-        status: newStatus,
-      });
-
+      const result = await updateApplicationStatusAPI(applicationId, { status: newStatus });
       if (result.status === 200) {
-        Swal.fire({
-          title: "Updated!",
-          text: "Status has been updated successfully.",
-          icon: "success",
-          confirmButtonColor: "#000",
-        });
-
-        // Refresh the list
+        Swal.fire("Updated!", "Status updated successfully.", "success");
         handleFetchApplicants();
         setStatusDropdownOpen(null);
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Update Failed",
-          text: result?.response?.data?.message || "Something went wrong!",
-        });
       }
     } catch (error) {
-      console.log(error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Failed to update status. Please try again.",
-      });
+      Swal.fire("Error", "Failed to update status.", "error");
     }
   };
 
-  const handleOpenModal = (applicationId) => {
-    setApplicationId(applicationId);
+  // Open Modal — Detect if interview exists
+  const handleOpenModal = (appId) => {
+    const application = applications.find((app) => app._id === appId);
+    const interview = application?.interviews?.[0] || null; // latest interview
+
+    setApplicationId(appId);
+    setExistingInterview(interview);
     setShowModal(true);
-  }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setApplicationId(null);
+    setExistingInterview(null);
+  };
 
   useEffect(() => {
     handleFetchApplicants();
@@ -155,21 +139,17 @@ const ViewAllApplicants = ({ jobId }) => {
 
   return (
     <div className="w-full bg-white">
-      {/* Header Section */}
+      {/* Header & Filters */}
       <div className="flex flex-col justify-between items-start border-b border-gray-300 gap-6 md:py-10 py-0 pb-3 mb-4">
         <div>
           <h2 className="md:text-[24px] text-[20px] font-normal w-max text-[#A9A9A9] leading-none">
             <span className="text-black">Applicants Management</span>
           </h2>
-          <p className="text-[16px] text-gray-600 mt-3">
-            View and manage all applicants
-          </p>
+          <p className="text-[16px] text-gray-600 mt-3">View and manage all applicants</p>
         </div>
 
-        {/* Search + Filter */}
         <div className="w-full flex md:flex-row flex-col items-center justify-start gap-3">
-          {/* Search */}
-          <div className="md:w-[80%] w-full flex items-center border border-gray-300 rounded-lg px-3 py-1.5 ">
+          <div className="md:w-[80%] w-full flex items-center border border-gray-300 rounded-lg px-3 py-1.5">
             <IoSearchOutline className="text-gray-500 text-[18px]" />
             <input
               type="text"
@@ -180,48 +160,30 @@ const ViewAllApplicants = ({ jobId }) => {
             />
           </div>
 
-          {/* Status Filter */}
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="flex items-center gap-2 rounded-[8px] px-4 py-[8px] text-[15px] text-white bg-primary transition"
             >
-              {status ? status : "Filter Status"}
-              <LuChevronDown
-                className={`transition-transform ${
-                  dropdownOpen ? "rotate-180" : "rotate-0"
-                }`}
-              />
+              {status || "Filter Status"}
+              <LuChevronDown className={`transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
             </button>
 
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-lg shadow-md z-20">
                 <button
-                  onClick={() => {
-                    setStatus("");
-                    setPage(1);
-                    setDropdownOpen(false);
-                  }}
-                  className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                    status === "" ? "bg-gray-200 font-medium" : ""
-                  }`}
+                  onClick={() => { setStatus(""); setPage(1); setDropdownOpen(false); }}
+                  className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${status === "" ? "bg-gray-200 font-medium" : ""}`}
                 >
                   All
                 </button>
-
-                {allStatuses.map((s, i) => (
+                {allStatuses.map((s) => (
                   <button
-                    key={i}
-                    onClick={() => {
-                      setStatus(s);
-                      setPage(1);
-                      setDropdownOpen(false);
-                    }}
-                    className={`block w-full text-left px-4 py-2 text-sm capitalize hover:bg-gray-100 ${
-                      status === s ? "bg-gray-200 font-medium" : ""
-                    }`}
+                    key={s}
+                    onClick={() => { setStatus(s); setPage(1); setDropdownOpen(false); }}
+                    className={`block w-full text-left px-4 py-2 text-sm capitalize hover:bg-gray-100 ${status === s ? "bg-gray-200 font-medium" : ""}`}
                   >
-                    {s}
+                    {s.replace("-", " ")}
                   </button>
                 ))}
               </div>
@@ -230,9 +192,9 @@ const ViewAllApplicants = ({ jobId }) => {
         </div>
       </div>
 
-      {/* Loader */}
+      {/* Table */}
       {isLoading ? (
-        <div className="flex justify-center items-center w-full py-10">
+        <div className="flex justify-center items-center py-10">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           <p className="ml-2 text-primary">Loading...</p>
         </div>
@@ -241,84 +203,59 @@ const ViewAllApplicants = ({ jobId }) => {
           <table className="min-w-full text-left text-sm border-collapse whitespace-nowrap">
             <thead>
               <tr className="md:text-[18px] text-[16px] text-black">
-                <th className="py-3 px-6 font-semibold ">Candidate Name</th>
-                <th className="py-3 px-6 font-semibold ">Email</th>
-                <th className="py-3 px-6 font-semibold ">Phone Number</th>
-                <th className="py-3 px-6 font-semibold ">Status</th>
-                <th className="py-3 px-6 font-semibold ">Action</th>
+                <th className="py-3 px-6 font-semibold">Candidate Name</th>
+                <th className="py-3 px-6 font-semibold">Email</th>
+                <th className="py-3 px-6 font-semibold">Phone Number</th>
+                <th className="py-3 px-6 font-semibold">Status</th>
+                <th className="py-3 px-6 font-semibold">Action</th>
               </tr>
             </thead>
-
             <tbody>
               {applications.map((applicant, index) => {
                 const candidate = applicant.candidateDetails || {};
-                const fullName = `${candidate.firstName || ""} ${
-                  candidate.lastName || ""
-                }`.trim();
+                const fullName = `${candidate.firstName || ""} ${candidate.lastName || ""}`.trim();
+                const hasInterview = applicant.interviews?.length > 0;
 
                 return (
-                  <tr
-                    key={index}
-                    className="border-b border-gray-200 hover:bg-gray-100 transition-colors"
-                  >
-                    <td className="py-5 px-6 text-black font-medium ">
-                      {fullName || "N/A"}
-                    </td>
+                  <tr key={applicant._id} className="border-b border-gray-200 hover:bg-gray-100">
+                    <td className="py-5 px-6 text-black font-medium">{fullName || "N/A"}</td>
+                    <td className="py-5 px-6 text-black">{candidate.email || "N/A"}</td>
+                    <td className="py-5 px-6">{candidate.phoneNumber || "N/A"}</td>
 
-                    <td className="py-5 px-6 text-black ">
-                      {candidate.email || "N/A"}
-                    </td>
-
-                    <td className="py-5 px-6 ">
-                      {candidate.phoneNumber || "N/A"}
-                    </td>
-
-                    {/* Status Display with Dropdown */}
                     <td className="py-5 px-6 relative">
                       <div
                         onClick={(e) => {
                           const rect = e.currentTarget.getBoundingClientRect();
                           setDropdownPosition({
-                            top: rect.bottom + window.scrollY + 30, // clean spacing
-                            left: rect.left + window.scrollX + 4, // aligns perfectly
+                            top: rect.bottom + window.scrollY + 8,
+                            left: rect.left + window.scrollX,
                           });
-                          setStatusDropdownOpen((prev) =>
-                            prev === index ? null : index
-                          );
+                          setStatusDropdownOpen(statusDropdownOpen === index ? null : index);
                         }}
                         className="flex items-center gap-2 cursor-pointer"
                       >
-                        <span
-                          className={`w-2.5 h-2.5 rounded-full ${getStatusColor(
-                            applicant.status
-                          )}`}
-                        ></span>
-
-                        <span className="capitalize text-gray-800">
-                          {applicant.status || "N/A"}
-                        </span>
-
+                        <span className={`w-2.5 h-2.5 rounded-full ${getStatusColor(applicant.status)}`}></span>
+                        <span className="capitalize text-gray-800">{applicant.status || "N/A"}</span>
                         <LuChevronDown className="text-gray-600 ml-1" />
                       </div>
                     </td>
 
-                    {/* Action Button */}
                     <td className="py-5 px-6">
-                      <div className="flex items-center justify-start gap-4">
+                      <div className="flex items-center gap-4">
                         <button
-                          type="button"
                           onClick={() => handleNavigateToView(applicant._id)}
-                          className="hover:text-[#4D008C] transition-all duration-300"
+                          className="hover:text-[#4D008C] transition-all"
                         >
                           <FaEye />
                         </button>
-                        {applicant.status !== "hired" && (
+
+                        {applicant.status === "short-listed" && (
                           <button
-                            type="button"
                             onClick={() => handleOpenModal(applicant._id)}
                             className="px-3 py-2 rounded-md bg-purple-700 text-white text-sm font-medium hover:bg-purple-800 flex items-center gap-2"
                           >
-                            <FaCalendarAlt /> Schedule Interview
+                            <FaCalendarAlt />
+                            {hasInterview ? "Reschedule" : "Schedule"} Interview
                           </button>
                         )}
                       </div>
@@ -328,29 +265,24 @@ const ViewAllApplicants = ({ jobId }) => {
               })}
             </tbody>
           </table>
+
+          {/* Status Dropdown */}
           {statusDropdownOpen !== null && (
             <div
               className="fixed z-50 bg-white shadow-lg border border-gray-300 rounded-md"
-              style={{
-                top: dropdownPosition.top + 4,
-                left: dropdownPosition.left,
-                width: "160px",
-              }}
+              style={{ top: dropdownPosition.top, left: dropdownPosition.left, width: "160px" }}
             >
-              {allStatuses.map((s, i) => (
+              {allStatuses.map((s) => (
                 <button
-                  key={i}
+                  key={s}
                   className={`block w-full text-left px-4 py-2 text-sm capitalize hover:bg-gray-100 ${
-                    applications[statusDropdownOpen]?.status === s
-                      ? "bg-gray-200 font-medium"
-                      : ""
+                    applications[statusDropdownOpen]?.status === s ? "bg-gray-200 font-medium" : ""
                   }`}
                   onClick={() => {
                     handleStatusUpdate(applications[statusDropdownOpen]._id, s);
-                    setStatusDropdownOpen(null);
                   }}
                 >
-                  {s}
+                  {s.replace("-", " ")}
                 </button>
               ))}
             </div>
@@ -361,8 +293,10 @@ const ViewAllApplicants = ({ jobId }) => {
       {/* Modal */}
       <ScheduleInterviewModal
         isOpen={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={closeModal}
         applicationId={applicationId}
+        existingInterview={existingInterview}
+        onInterviewScheduled={handleFetchApplicants}
       />
     </div>
   );

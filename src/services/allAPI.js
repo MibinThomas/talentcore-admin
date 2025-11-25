@@ -123,6 +123,14 @@ export const scheduleInterviewAPI = async (reqBody) => {
   );
 };
 
+export const reScheduleInterviewAPI = async (interviewId, reqBody) => {
+  return await commonAPI(
+    "PUT",
+    `${SERVER_URL}/admin/interview/reschedule/${interviewId}`,
+    reqBody
+  );
+};
+
 // subscription plan
 
 export const getAllSubscriptionPlansAPI = async () => {

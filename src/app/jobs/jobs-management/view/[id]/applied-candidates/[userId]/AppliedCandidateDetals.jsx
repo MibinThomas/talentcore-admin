@@ -85,27 +85,32 @@ const quickLinks = [
 export default function ResumeExperiencePage({ applicationId }) {
   const [showModal, setShowModal] = useState(false);
   const [data, setData] = useState({});
-  console.log(applicationId);
+  const [existingInterview, setExistingInterview] = useState(null); // ← NEW: for reschedule
 
   const handleFetchApplicationDetails = async () => {
     try {
       const result = await getApplicationDetailsByIdAPI(applicationId);
       if (result.status === 200) {
-        setData(result.data.application);
+        const appData = result.data.application;
+        setData(appData);
+
+        // Extract latest interview (if any) — backend returns sorted by createdAt desc
+        const latestInterview = appData.interviews && appData.interviews.length > 0
+          ? appData.interviews[0]
+          : null;
+
+        setExistingInterview(latestInterview);
       } else {
         Swal.fire({
           icon: "error",
-          title:
-            result?.response?.data?.message ||
-            "Error fetching application details",
+          title: result?.response?.data?.message || "Error fetching application details",
         });
       }
     } catch (error) {
-      console.log(error);
+      console.log("Fetch error:", error);
+      Swal.fire({ icon: "error", title: "Failed to load candidate details" });
     }
   };
-
-  console.log(data);
 
   const handleDownloadResume = (url) => {
     if (!url) {
@@ -125,12 +130,19 @@ export default function ResumeExperiencePage({ applicationId }) {
   };
 
   useEffect(() => {
-    handleFetchApplicationDetails();
+    if (applicationId) {
+      handleFetchApplicationDetails();
+    }
   }, [applicationId]);
+
+  // Determine button text
+  const hasInterview = existingInterview?._id;
+  const buttonText = hasInterview ? "Reschedule Interview" : "Schedule Interview";
+
   return (
     <div className="min-h-screen bg-gray-50 ">
       <div className="container mx-auto bg-white rounded-2xl shadow-sm overflow-hidden">
-        {/* Schedule Interview Button*/}
+        {/* Schedule Interview Button */}
         <div className="flex flex-wrap justify-end gap-3 mt-5">
           <button className="text-[16px] text-white bg-green-700 px-8 py-1 rounded-[10px] ">
             {data?.status}
@@ -140,9 +152,10 @@ export default function ResumeExperiencePage({ applicationId }) {
             onClick={() => setShowModal(true)}
             className="px-5 py-2 rounded-md bg-purple-700 text-white text-sm font-medium hover:bg-purple-800 flex items-center gap-2"
           >
-            <FaCalendarAlt /> Schedule Interview
+            <FaCalendarAlt /> {buttonText}
           </button>
         </div>
+
         {/* Profile Header Section */}
         <div className="py-6 flex flex-col md:flex-row items-start gap-6">
           {/* Profile Info */}
@@ -153,6 +166,7 @@ export default function ResumeExperiencePage({ applicationId }) {
               </h1>
               <p className="text-black mt-1 text-[16px]">{data?.job?.title}</p>
             </div>
+
             {/* Contact Info */}
             <div className="flex flex-col md:flex-row justify-start md:gap-6 gap-3 mt-4 text-sm text-black">
               <div className="flex items-center gap-2">
@@ -282,11 +296,14 @@ export default function ResumeExperiencePage({ applicationId }) {
           </aside>
         </div>
       </div>
-      {/* Modal */}
+
+      {/* MODAL — Now supports both Schedule & Reschedule */}
       <ScheduleInterviewModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         applicationId={applicationId}
+        existingInterview={existingInterview}  
+        onInterviewScheduled={handleFetchApplicationDetails} 
       />
     </div>
   );
