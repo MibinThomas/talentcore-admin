@@ -5,7 +5,7 @@ import store from "../store/store";
 import { logout } from "../store/slices/authSlice";
 
 const axiosClient = axios.create({
-  baseURL: "",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api",
   headers: { "Content-Type": "application/json" },
   withCredentials: true, // ✅ cookies will always be sent
 });
@@ -25,7 +25,10 @@ axiosClient.interceptors.response.use(
         "/auth/verify-otp",
       ];
 
-      if (status === 401 && !publicRoutes.some(route => requestUrl.includes(route))) {
+      if (
+        status === 401 &&
+        !publicRoutes.some((route) => requestUrl.includes(route))
+      ) {
         store.dispatch(logout());
         toast.error("Session expired. Please log in again.");
         if (typeof window !== "undefined") {
