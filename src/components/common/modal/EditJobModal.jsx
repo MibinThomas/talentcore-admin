@@ -1,5 +1,8 @@
 "use client";
-import { updateJobDetailsByIdAPI, getAllCompaniesAPI } from "@/src/services/allAPI";
+import {
+  updateJobDetailsByIdAPI,
+  getAllCompaniesAPI,
+} from "@/src/services/allAPI";
 import React, { useEffect, useState } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
@@ -47,7 +50,7 @@ function EditJobModal({ job, onUpdate }) {
       fetchCompanies();
       if (job) {
         setFormData({
-          companyId: job?.companyId?._id || job?.companyId || "",
+          companyId: job?.companyId,
           title: job?.title || "",
           description: job?.description || "",
           responsibilities: job?.responsibilities?.length
@@ -102,10 +105,12 @@ function EditJobModal({ job, onUpdate }) {
 
     try {
       const reqBody = {
-        companyId: formData.companyId,
+        companyId: formData.companyId || undefined,
         title: formData.title,
         description: formData.description,
-        responsibilities: formData.responsibilities.filter((r) => r.trim() !== ""),
+        responsibilities: formData.responsibilities.filter(
+          (r) => r.trim() !== ""
+        ),
         requirements: formData.requirements.filter((r) => r.trim() !== ""),
         skills: formData.skills.filter((r) => r.trim() !== ""),
         benefits: formData.benefits.filter((r) => r.trim() !== ""),
@@ -160,6 +165,9 @@ function EditJobModal({ job, onUpdate }) {
       setIsLoading(false);
     }
   };
+
+  console.log("Opened Job", job);
+  console.log("Form data", formData);
 
   const inputClass =
     "text-[16px] border border-gray-200 rounded-[10px] px-3 py-2 w-full focus:outline-none placeholder:text-[#B1B1B1] shadow-sm";
@@ -285,6 +293,7 @@ function EditJobModal({ job, onUpdate }) {
                 <option value="Part-Time">Part-Time</option>
                 <option value="Contract">Contract</option>
                 <option value="Internship">Internship</option>
+                <option value="Freelance">Freelance</option>
               </select>
 
               <select
@@ -294,10 +303,12 @@ function EditJobModal({ job, onUpdate }) {
                 className={inputClass}
               >
                 <option value="">Experience Level</option>
-                <option value="0-1">0-1 year</option>
+                <option value="0-1">Entry</option>
                 <option value="1-2">1-2 years</option>
                 <option value="3-5">3-5 years</option>
-                <option value="5+">5+ years</option>
+                <option value="3-5">5-7 years</option>
+                <option value="5+">7-12 years</option>
+                <option value="12+">12+ years</option>
               </select>
 
               <input

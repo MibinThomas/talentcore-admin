@@ -298,6 +298,7 @@ function AddJobModal() {
                 <option value="Part-Time">Part-Time</option>
                 <option value="Contract">Contract</option>
                 <option value="Internship">Internship</option>
+                <option value="Freelance">Freelance</option>
               </select>
 
               <select
@@ -307,10 +308,12 @@ function AddJobModal() {
                 className={inputClass}
               >
                 <option value="">Experience Level</option>
-                <option value="0-1">0-1 year</option>
+                <option value="0-1">Entry</option>
                 <option value="1-2">1-2 years</option>
                 <option value="3-5">3-5 years</option>
-                <option value="5+">5+ years</option>
+                <option value="3-5">5-7 years</option>
+                <option value="5+">7-12 years</option>
+                <option value="12+">12+ years</option>
               </select>
 
               <input

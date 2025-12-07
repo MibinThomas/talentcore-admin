@@ -76,9 +76,9 @@ function JobCard({ job ,onUpdate}) {
             >
               View Details
             </button>
-            <button className="bg-white p-3 rounded-[10px]">
+            {/* <button className="bg-white p-3 rounded-[10px]">
               <LuTrash size={20} className="text-black" />
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

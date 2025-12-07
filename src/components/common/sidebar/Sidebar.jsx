@@ -1,15 +1,19 @@
 "use client";
 import React, { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { HiMenu, HiX, HiChevronDown } from "react-icons/hi";
 import Image from "next/image";
 import { MdLogout } from "react-icons/md";
+import { useDispatch } from "react-redux";
+import { logout } from "@/src/store/slices/authSlice";
 
 function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
+  const dispatch = useDispatch();
+  const router = useRouter();
 
   const data = [
     { id: 1, label: "Dashboard", path: "/dashboard" },
@@ -41,6 +45,12 @@ function Sidebar() {
   };
 
   const isParentActive = (path) => pathname.startsWith(path);
+
+  const handleLogout = () => {
+    setIsOpen(false);
+    dispatch(logout());
+    router.push("/auth");
+  };
 
   return (
     <>
@@ -162,7 +172,11 @@ function Sidebar() {
 
           {/* logout button */}
           <div className="mt-10 flex items-center justify-center">
-            <button className="text-white flex items-center justify-center gap-2 px-4 py-1 rounded-[10px] bg-primary">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="text-white flex items-center justify-center gap-2 px-4 py-1 rounded-[10px] bg-primary"
+            >
               <MdLogout size={20} />
               Logout
             </button>
