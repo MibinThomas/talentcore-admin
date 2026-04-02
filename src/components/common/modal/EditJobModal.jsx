@@ -166,8 +166,8 @@ function EditJobModal({ job, onUpdate }) {
     }
   };
 
-  console.log("Opened Job", job);
-  console.log("Form data", formData);
+  // console.log("Opened Job", job);
+  // console.log("Form data", formData);
 
   const inputClass =
     "text-[16px] border border-gray-200 rounded-[10px] px-3 py-2 w-full focus:outline-none placeholder:text-[#B1B1B1] shadow-sm";

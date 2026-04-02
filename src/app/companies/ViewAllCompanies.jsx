@@ -19,7 +19,7 @@ function ViewAllCompanies() {
       if (result.status === 200) {
         setCompanyData(result?.data?.companies || []);
       } else {
-        console.log(result?.response?.data?.message);
+        // console.log(result?.response?.data?.message);
       }
     } catch (error) {
       console.log(error);

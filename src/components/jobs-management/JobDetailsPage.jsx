@@ -22,13 +22,13 @@ function JobDetailsPage({ jobId }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  console.log(jobId);
+  // console.log(jobId);
 
   const handleFetchJobDetails = async () => {
     setLoading(true);
     try {
       const result = await getJobDetailsByIdAPI(jobId);
-      console.log("JobDetails", result.data.job);
+      // console.log("JobDetails", result.data.job);
 
       if (result.status === 200) {
         setLoading(false);

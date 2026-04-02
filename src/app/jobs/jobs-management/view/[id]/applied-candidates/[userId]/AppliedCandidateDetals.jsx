@@ -107,7 +107,7 @@ export default function ResumeExperiencePage({ applicationId }) {
         });
       }
     } catch (error) {
-      console.log("Fetch error:", error);
+      // console.log("Fetch error:", error);
       Swal.fire({ icon: "error", title: "Failed to load candidate details" });
     }
   };
@@ -131,7 +131,9 @@ export default function ResumeExperiencePage({ applicationId }) {
 
   useEffect(() => {
     if (applicationId) {
-      handleFetchApplicationDetails();
+      (async () => {
+        await handleFetchApplicationDetails();
+      })();
     }
   }, [applicationId]);
 

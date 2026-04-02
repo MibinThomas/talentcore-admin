@@ -82,8 +82,6 @@ function AddCompanyModal({ onAdded }) {
     } catch (error) {}
   };
 
-  console.log(formData);
-
   return (
     <>
       {/* Trigger Button */}

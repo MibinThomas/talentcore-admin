@@ -5,19 +5,16 @@ import CandidateProfileDetails from "./CandidateProfileDetails";
 import { getCandidatesDetailsByIdAPI } from "@/src/services/allAPI";
 
 function CandidateProfileView({ candidateId }) {
-//candidate details
+  //candidate details
   const [data, setData] = useState({});
   const handleGetCandidateDetails = async () => {
     try {
       const result = await getCandidatesDetailsByIdAPI(candidateId);
       if (result.status === 200) {
         setData(result.data.data);
+      } else {
+        // console.log(result.response.data.message);
       }
-      else{
-        console.log(result.response.data.message);
-        
-      }
-      console.log(result);
     } catch (error) {
       console.log(error);
     }

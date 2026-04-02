@@ -33,7 +33,7 @@ const CandidateManagement = () => {
         setCandidates(result.data.data || []);
         setTotalPages(result.data.totalPages || 1);
       } else {
-        console.log(result.response?.data?.message);
+        // console.log(result.response?.data?.message);
       }
     } catch (error) {
       console.log(error);
@@ -55,7 +55,7 @@ const CandidateManagement = () => {
           )
         );
       } else {
-        console.log(result.response?.data?.message || "Failed");
+        // console.log(result.response?.data?.message || "Failed");
       }
     } catch (error) {
       console.log(error);

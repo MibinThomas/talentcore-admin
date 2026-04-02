@@ -1,14 +1,11 @@
-import CandidateProfileView from '@/src/components/candidate-management/CandidateProfileView'
-import React from 'react'
+import CandidateProfileView from "@/src/components/candidate-management/CandidateProfileView";
+import React from "react";
 
-async function Page({params}) {
-  const {id}=await params
-  console.log(id);
-  
+async function Page({ params }) {
+  const { id } = await params;
+  // console.log(id);
 
-  return (
-    <CandidateProfileView candidateId={id}/>
-  )
+  return <CandidateProfileView candidateId={id} />;
 }
 
-export default Page
+export default Page;

@@ -12,7 +12,7 @@ function StatsOverview() {
   const handleFetchCount = async () => {
     try {
       const result = await getCandidatesCountAPI();
-      console.log(result);
+      // console.log(result);
       if (result.status === 200) {
         setCount({
           candidatesCount: result.data.data.candidatesCount,

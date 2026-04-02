@@ -30,14 +30,15 @@ function JobManagement() {
       };
 
       const result = await fetchAllJobsAPI(queryParams);
-
+      // console.log(result);
+      
       if (result.status === 200) {
         const { jobs, totalPages, page: currentPage } = result.data;
         setJobs(jobs || []);
         setTotalPages(totalPages || 1);
         setPage(currentPage || 1);
       } else {
-        console.log(result?.response?.data?.message);
+        // console.log(result?.response?.data?.message);
       }
     } catch (error) {
       console.error(error);
@@ -53,7 +54,7 @@ function JobManagement() {
         const companies = result.data.companies || [];
         setCompany(companies);
       } else {
-        console.log(result?.response?.data?.message);
+        // console.log(result?.response?.data?.message);
       }
     } catch (error) {
       console.error(error);

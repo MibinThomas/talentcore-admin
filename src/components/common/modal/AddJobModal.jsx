@@ -35,7 +35,7 @@ function AddJobModal() {
         const companyData = result.data.companies || [];
         setCompanies(companyData);
       } else {
-        console.log(result?.response?.data?.message);
+        // console.log(result?.response?.data?.message);
       }
     } catch (error) {
       console.error(error);

@@ -27,7 +27,7 @@ const AuthForm = () => {
     try {
       const { email, password } = formData;
 
-      // 🧩 Basic validation
+      // Basic validation
       if (!email || !password) {
         Swal.fire({
           icon: "info",
@@ -37,25 +37,25 @@ const AuthForm = () => {
         return;
       }
 
-      // 🧠 Call API
+      //  Call API
       const result = await loginApi(formData);
-      console.log(result);
+      // console.log(result);
 
-      // ✅ Check response
+      // Check response
       if (result.status === 200 && result.data?.user) {
         const { user } = result.data;
 
-        // 🔒 Allow only admin role
+        // Allow only admin role
         if (user.role !== "admin") {
           Swal.fire({
             icon: "warning",
             title: "Access Denied",
             text: "Only admin users can access this dashboard.",
           });
-          return; // ❌ stop here
+          return; //  stop here
         }
 
-        // ✅ If admin → store user & redirect
+        //  If admin → store user & redirect
         dispatch(setUser({ user }));
 
         Swal.fire({

@@ -5,6 +5,10 @@ export const loginApi = async (reqBody) => {
   return await commonAPI("POST", `${SERVER_URL}/auth/login`, reqBody);
 };
 
+export const resetPasswordAPI = async (reqBody) => {
+  return await commonAPI("POST", `${SERVER_URL}/auth/reset-admin-password`, reqBody);
+};
+
 // dashboard
 export const getCandidatesCountAPI = async () => {
   return await commonAPI("GET", `${SERVER_URL}/admin/dashboard/count`);

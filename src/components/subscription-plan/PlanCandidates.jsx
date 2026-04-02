@@ -221,7 +221,7 @@ const PlanCandidates = () => {
             </span>
             <button
               onClick={handleNextPage}
-              disabled={page === totalPages || isLoading}
+              disabled={page === totalPages}
               className="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50"
             >
               Next
